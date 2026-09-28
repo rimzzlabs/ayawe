@@ -1,0 +1,20 @@
+$schema: "https://moonrepo.dev/schemas/project.json"
+
+language: "typescript"
+layer: "application"
+tags: ["worker"]
+
+dependsOn: ["crypto"]
+
+tasks:
+  dev:
+    command: "wrangler dev"
+    preset: "server"
+    deps: ["web:build"]
+
+  deploy:
+    command: "wrangler deploy"
+    deps: ["web:build", "~:typecheck"]
+    options:
+      cache: false
+      runInCI: false

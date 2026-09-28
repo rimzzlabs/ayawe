@@ -1,0 +1,23 @@
+$schema: "https://moonrepo.dev/schemas/project.json"
+
+language: "typescript"
+layer: "application"
+tags: ["frontend"]
+
+dependsOn: ["crypto"]
+
+fileGroups:
+  sources: ["src/**/*", "index.html", "vite.config.ts"]
+
+tasks:
+  dev:
+    command: "vite"
+    preset: "server"
+
+  build:
+    command: "vite build"
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+    outputs:
+      - "dist"

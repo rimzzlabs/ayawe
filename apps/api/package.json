@@ -1,0 +1,14 @@
+{
+  "name": "@ayawe/api",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@ayawe/crypto": "workspace:*",
+    "hono": "^4.13.10"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260928.1",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.142.0"
+  }
+}

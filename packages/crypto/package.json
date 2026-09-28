@@ -1,0 +1,14 @@
+{
+  "name": "@ayawe/crypto",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./keyring": "./src/keyring.ts",
+    "./seal": "./src/seal.ts",
+    "./result": "./src/result.ts"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
+  }
+}

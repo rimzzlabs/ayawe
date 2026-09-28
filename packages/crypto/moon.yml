@@ -1,0 +1,11 @@
+$schema: "https://moonrepo.dev/schemas/project.json"
+
+language: "typescript"
+layer: "library"
+tags: ["crypto"]
+
+tasks:
+  test:
+    command: "vitest run"
+    inputs:
+      - "@group(sources)"

@@ -1,0 +1,13 @@
+# moon
+.moon/cache
+.moon/docker
+
+# deps and build output
+node_modules
+dist
+.wrangler
+
+# secrets
+.env
+.env.*
+.dev.vars

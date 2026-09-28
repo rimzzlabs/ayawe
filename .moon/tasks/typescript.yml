@@ -1,0 +1,19 @@
+$schema: "https://moonrepo.dev/schemas/tasks.json"
+
+# Every project that uses the typescript toolchain inherits these tasks.
+inheritedBy:
+  toolchains: ["typescript"]
+
+fileGroups:
+  sources: ["src/**/*"]
+  configs: ["package.json", "tsconfig.json"]
+
+tasks:
+  typecheck:
+    command: "tsc --noEmit"
+    # Without `node`, moon does not add node_modules/.bin to the lookup paths.
+    toolchains: ["typescript", "node"]
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+      - "/tsconfig.base.json"

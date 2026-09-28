@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ayawe",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "../web/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "kv_namespaces": [
+    // Run `pnpm wrangler kv namespace create VAULT` and paste the id here before deploy.
+    { "binding": "VAULT", "id": "REPLACE_WITH_KV_NAMESPACE_ID" }
+  ]
+}

@@ -1,0 +1,16 @@
+$schema: "https://moonrepo.dev/schemas/toolchains.json"
+
+# No `version` fields: moon uses the node and pnpm already on PATH.
+# Add a version to let proto download and pin one.
+javascript:
+  packageManager: "pnpm"
+  inferTasksFromScripts: false
+  syncProjectWorkspaceDependencies: true
+  dependencyVersionFormat: "workspace"
+
+node: {}
+
+pnpm: {}
+
+typescript:
+  syncProjectReferences: false
