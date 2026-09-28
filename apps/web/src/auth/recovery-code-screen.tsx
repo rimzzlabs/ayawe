@@ -2,7 +2,14 @@ import { CopyIcon, WarningIcon } from "@phosphor-icons/react"
 import { AuthLayout } from "@/auth/auth-layout"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { toast } from "@/components/ui/toast"
 import { copyText } from "@/lib/clipboard"
 
@@ -29,7 +36,7 @@ export function RecoveryCodeScreen(props: RecoveryCodeScreenProps) {
           <CardDescription>If you forget the password, this code opens the vault.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <code className="bg-muted p-4 font-mono text-sm leading-relaxed break-all">
+          <code className="break-all bg-muted p-4 font-mono text-sm leading-relaxed">
             {props.recoveryCode}
           </code>
           <Alert>

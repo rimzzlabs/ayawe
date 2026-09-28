@@ -6,3 +6,7 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - workerd
+
+# lefthook installs hooks through the root `prepare` script, so its postinstall is not needed.
+ignoredBuiltDependencies:
+  - lefthook

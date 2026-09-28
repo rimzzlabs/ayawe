@@ -1,0 +1,11 @@
+# Biome formats JS, TS, JSON, and CSS. Prettier formats only Markdown and YAML.
+*.js
+*.jsx
+*.ts
+*.tsx
+*.json
+*.jsonc
+*.css
+pnpm-lock.yaml
+.agents
+.moon/cache

@@ -14,7 +14,9 @@ const app = new Hono<{ Bindings: Env }>()
 
 function parseEnvName(name: string) {
   if (!ENV_NAME.test(name)) {
-    throw new HTTPException(400, { message: "Use 1 to 64 letters, digits, dots, dashes, or underscores" })
+    throw new HTTPException(400, {
+      message: "Use 1 to 64 letters, digits, dots, dashes, or underscores",
+    })
   }
   return `${ENV_PREFIX}${name}`
 }

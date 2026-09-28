@@ -1,10 +1,17 @@
 import { AuthLayout } from "@/auth/auth-layout"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
-import { screenForToken, type Screen } from "@/lib/screen"
+import { type Screen, screenForToken } from "@/lib/screen"
 import { saveToken } from "@/lib/token-storage"
 import { readField, useFormAction } from "@/lib/use-form-action"
 

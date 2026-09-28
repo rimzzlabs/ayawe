@@ -1,7 +1,14 @@
 import { CaretRightIcon, FileTextIcon, PlusIcon, VaultIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
-import { Item, ItemActions, ItemContent, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item"
 import { Spinner } from "@/components/ui/spinner"
 
 interface VaultListProps {
@@ -41,9 +48,9 @@ export function VaultList(props: VaultListProps) {
           New
         </Button>
       </div>
-      <ItemGroup className="gap-2">
+      <ul className="flex flex-col gap-2">
         {props.names.map((name) => (
-          <div role="listitem" key={name}>
+          <li key={name}>
             <Item
               variant="outline"
               size="sm"
@@ -62,11 +69,13 @@ export function VaultList(props: VaultListProps) {
               <ItemContent>
                 <ItemTitle className="font-mono">{name}</ItemTitle>
               </ItemContent>
-              <ItemActions>{props.openingName === name ? <Spinner /> : <CaretRightIcon />}</ItemActions>
+              <ItemActions>
+                {props.openingName === name ? <Spinner /> : <CaretRightIcon />}
+              </ItemActions>
             </Item>
-          </div>
+          </li>
         ))}
-      </ItemGroup>
+      </ul>
     </section>
   )
 }

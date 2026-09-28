@@ -30,7 +30,8 @@ export function EnvEditor(props: EnvEditorProps) {
 
   const form = useFormAction(async (formData) => {
     const name = props.name ?? readField(formData, "name")
-    if (!ENV_NAME_PATTERN.test(name)) return "Use letters, digits, dots, dashes, or underscores for the name"
+    if (!ENV_NAME_PATTERN.test(name))
+      return "Use letters, digits, dots, dashes, or underscores for the name"
     if (isNew && props.existingNames.includes(name)) return "An env file with this name exists"
 
     const sealed = await seal(props.session.dataKey, content)
@@ -54,7 +55,13 @@ export function EnvEditor(props: EnvEditorProps) {
   return (
     <form className="flex flex-col gap-6" onSubmit={form.onSubmit}>
       <div className="flex items-center gap-2">
-        <Button type="button" variant="ghost" size="icon-sm" aria-label="Back to the list" onClick={props.onClose}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Back to the list"
+          onClick={props.onClose}
+        >
           <ArrowLeftIcon />
         </Button>
         <h1 className="truncate font-heading text-2xl">{props.name ?? "New env file"}</h1>
@@ -64,7 +71,14 @@ export function EnvEditor(props: EnvEditorProps) {
         {isNew && (
           <Field>
             <FieldLabel htmlFor="name">Name</FieldLabel>
-            <Input id="name" name="name" placeholder="my-app.dev" autoComplete="off" spellCheck={false} autoFocus />
+            <Input
+              id="name"
+              name="name"
+              placeholder="my-app.dev"
+              autoComplete="off"
+              spellCheck={false}
+              autoFocus
+            />
             <FieldDescription>For example the project name and the stage.</FieldDescription>
           </Field>
         )}
@@ -96,7 +110,11 @@ export function EnvEditor(props: EnvEditorProps) {
             Copy
           </Button>
           <Button type="submit" disabled={form.pending}>
-            {form.pending ? <Spinner data-icon="inline-start" /> : <FloppyDiskIcon data-icon="inline-start" />}
+            {form.pending ? (
+              <Spinner data-icon="inline-start" />
+            ) : (
+              <FloppyDiskIcon data-icon="inline-start" />
+            )}
             Save
           </Button>
         </div>

@@ -56,7 +56,11 @@ export async function fetchKeyring(token: string): Promise<Result<Keyring | null
 }
 
 export function saveKeyring(token: string, keyring: Keyring) {
-  return requestEmpty({ token, path: "/keyring", init: { method: "PUT", body: JSON.stringify(keyring) } })
+  return requestEmpty({
+    token,
+    path: "/keyring",
+    init: { method: "PUT", body: JSON.stringify(keyring) },
+  })
 }
 
 export async function listEnvs(token: string): Promise<Result<string[]>> {
@@ -86,5 +90,9 @@ export function saveEnv(params: SaveEnvParams) {
 }
 
 export function deleteEnv(token: string, name: string) {
-  return requestEmpty({ token, path: `/envs/${encodeURIComponent(name)}`, init: { method: "DELETE" } })
+  return requestEmpty({
+    token,
+    path: `/envs/${encodeURIComponent(name)}`,
+    init: { method: "DELETE" },
+  })
 }

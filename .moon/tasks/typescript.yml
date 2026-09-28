@@ -17,3 +17,11 @@ tasks:
       - "@group(sources)"
       - "@group(configs)"
       - "/tsconfig.base.json"
+
+  lint:
+    command: "biome check ."
+    toolchains: ["typescript", "node"]
+    inputs:
+      - "@group(sources)"
+      - "@group(configs)"
+      - "/biome.json"

@@ -1,7 +1,14 @@
-import { unlockWithPassword, type Keyring } from "@ayawe/crypto/keyring"
+import { type Keyring, unlockWithPassword } from "@ayawe/crypto/keyring"
 import { AuthLayout } from "@/auth/auth-layout"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
@@ -25,7 +32,12 @@ export function UnlockScreen(props: UnlockScreenProps) {
     const names = await listEnvs(props.token)
     if (!names.ok) return names.error.message
 
-    props.onUnlocked({ token: props.token, keyring: props.keyring, dataKey: unlocked.value, names: names.value })
+    props.onUnlocked({
+      token: props.token,
+      keyring: props.keyring,
+      dataKey: unlocked.value,
+      names: names.value,
+    })
     return undefined
   })
 

@@ -6,7 +6,7 @@ import { SetupScreen } from "@/auth/setup-screen"
 import { UnlockScreen } from "@/auth/unlock-screen"
 import { Spinner } from "@/components/ui/spinner"
 import { Toaster } from "@/components/ui/toast"
-import { screenForToken, type Screen } from "@/lib/screen"
+import { type Screen, screenForToken } from "@/lib/screen"
 import { clearToken, readToken } from "@/lib/token-storage"
 import { VaultScreen } from "@/vault/vault-screen"
 
@@ -49,7 +49,9 @@ function Screens() {
       return (
         <SetupScreen
           token={screen.token}
-          onCreated={(session, recoveryCode) => setScreen({ kind: "recovery-code", session, recoveryCode })}
+          onCreated={(session, recoveryCode) =>
+            setScreen({ kind: "recovery-code", session, recoveryCode })
+          }
         />
       )
     case "recovery-code":
@@ -65,7 +67,9 @@ function Screens() {
           token={screen.token}
           keyring={screen.keyring}
           onUnlocked={(session) => setScreen({ kind: "vault", session })}
-          onForgot={() => setScreen({ kind: "recover", token: screen.token, keyring: screen.keyring })}
+          onForgot={() =>
+            setScreen({ kind: "recover", token: screen.token, keyring: screen.keyring })
+          }
           onDisconnect={handleDisconnect}
         />
       )
@@ -83,7 +87,11 @@ function Screens() {
         <VaultScreen
           session={screen.session}
           onLock={() =>
-            setScreen({ kind: "unlock", token: screen.session.token, keyring: screen.session.keyring })
+            setScreen({
+              kind: "unlock",
+              token: screen.session.token,
+              keyring: screen.session.keyring,
+            })
           }
         />
       )

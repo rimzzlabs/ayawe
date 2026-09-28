@@ -1,7 +1,14 @@
 import { createKeyring } from "@ayawe/crypto/keyring"
 import { AuthLayout } from "@/auth/auth-layout"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
@@ -28,7 +35,12 @@ export function SetupScreen(props: SetupScreenProps) {
     const saved = await saveKeyring(props.token, created.keyring)
     if (!saved.ok) return saved.error.message
 
-    const session = { token: props.token, keyring: created.keyring, dataKey: created.dataKey, names: [] }
+    const session = {
+      token: props.token,
+      keyring: created.keyring,
+      dataKey: created.dataKey,
+      names: [],
+    }
     props.onCreated(session, created.recoveryCode)
     return undefined
   })

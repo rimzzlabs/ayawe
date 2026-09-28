@@ -1,0 +1,25 @@
+# Run `pnpm install` to install the hooks (the root `prepare` script runs `lefthook install`).
+pre-commit:
+  parallel: true
+  jobs:
+    - name: biome
+      glob: "*.{js,jsx,ts,tsx,json,jsonc,css}"
+      run: pnpm exec biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      stage_fixed: true
+
+    - name: prettier
+      glob: "*.{md,yml,yaml}"
+      exclude:
+        - "pnpm-lock.yaml"
+        - ".agents/**"
+      run: pnpm exec prettier --write {staged_files}
+      stage_fixed: true
+
+    - name: typecheck
+      glob: "*.{ts,tsx}"
+      run: pnpm exec moon run :typecheck --affected --status staged
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: pnpm exec commitlint --edit {1}
