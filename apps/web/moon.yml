@@ -14,6 +14,11 @@ tasks:
     command: "vite"
     preset: "server"
 
+  test:
+    command: "vitest run"
+    inputs:
+      - "@group(sources)"
+
   build:
     command: "vite build"
     inputs:

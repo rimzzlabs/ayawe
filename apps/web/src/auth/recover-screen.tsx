@@ -13,15 +13,16 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
-import { listEnvs, saveKeyring } from "@/lib/api"
-import type { Session } from "@/lib/screen"
+import { type Me, saveKeyring } from "@/lib/api"
+import { openVault, type Screen } from "@/lib/screen"
 import { readField, useFormAction } from "@/lib/use-form-action"
 
 interface RecoverScreenProps {
-  token: string
+  me: Me
   keyring: Keyring
-  onRecovered: (session: Session) => void
+  onRecovered: (screen: Screen) => void
   onBack: () => void
+  onSignOut: () => void
 }
 
 export function RecoverScreen(props: RecoverScreenProps) {
@@ -39,22 +40,21 @@ export function RecoverScreen(props: RecoverScreenProps) {
       dataKey: unlocked.value,
       password,
     })
-    const saved = await saveKeyring(props.token, keyring)
+    const saved = await saveKeyring(keyring)
     if (!saved.ok) return saved.error.message
 
-    const names = await listEnvs(props.token)
-    if (!names.ok) return names.error.message
-
-    props.onRecovered({ token: props.token, keyring, dataKey: unlocked.value, names: names.value })
+    const vault = await openVault({ me: props.me, keyring, dataKey: unlocked.value })
+    if (!vault.ok) return vault.error.message
+    props.onRecovered(vault.value)
     return undefined
   })
 
   return (
-    <AuthLayout>
+    <AuthLayout me={props.me} onSignOut={props.onSignOut}>
       <Card>
         <CardHeader>
-          <CardTitle>Recover</CardTitle>
-          <CardDescription>Use your recovery code to set a new password.</CardDescription>
+          <CardTitle>Recover your vault</CardTitle>
+          <CardDescription>Use your recovery code to set a new vault password.</CardDescription>
         </CardHeader>
         <CardContent>
           <form id="recover-form" onSubmit={form.onSubmit}>
@@ -67,10 +67,11 @@ export function RecoverScreen(props: RecoverScreenProps) {
                   autoComplete="off"
                   spellCheck={false}
                   className="font-mono"
+                  autoFocus
                 />
               </Field>
               <Field data-invalid={form.error ? true : undefined}>
-                <FieldLabel htmlFor="password">New password</FieldLabel>
+                <FieldLabel htmlFor="password">New vault password</FieldLabel>
                 <Input
                   id="password"
                   name="password"

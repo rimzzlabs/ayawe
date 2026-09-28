@@ -12,47 +12,41 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
-import { listEnvs } from "@/lib/api"
-import type { Session } from "@/lib/screen"
+import type { Me } from "@/lib/api"
+import { openVault, type Screen } from "@/lib/screen"
 import { readField, useFormAction } from "@/lib/use-form-action"
 
 interface UnlockScreenProps {
-  token: string
+  me: Me
   keyring: Keyring
-  onUnlocked: (session: Session) => void
+  onUnlocked: (screen: Screen) => void
   onForgot: () => void
-  onDisconnect: () => void
+  onSignOut: () => void
 }
 
 export function UnlockScreen(props: UnlockScreenProps) {
   const form = useFormAction(async (formData) => {
     const unlocked = await unlockWithPassword(props.keyring, readField(formData, "password"))
-    if (!unlocked.ok) return "The password is wrong"
+    if (!unlocked.ok) return "The vault password is wrong"
 
-    const names = await listEnvs(props.token)
-    if (!names.ok) return names.error.message
-
-    props.onUnlocked({
-      token: props.token,
-      keyring: props.keyring,
-      dataKey: unlocked.value,
-      names: names.value,
-    })
+    const vault = await openVault({ me: props.me, keyring: props.keyring, dataKey: unlocked.value })
+    if (!vault.ok) return vault.error.message
+    props.onUnlocked(vault.value)
     return undefined
   })
 
   return (
-    <AuthLayout>
+    <AuthLayout me={props.me} onSignOut={props.onSignOut}>
       <Card>
         <CardHeader>
-          <CardTitle>Unlock</CardTitle>
-          <CardDescription>Enter your password to decrypt your env files.</CardDescription>
+          <CardTitle>Unlock your vault</CardTitle>
+          <CardDescription>Enter your vault password to decrypt your secrets.</CardDescription>
         </CardHeader>
         <CardContent>
           <form id="unlock-form" onSubmit={form.onSubmit}>
             <FieldGroup>
               <Field data-invalid={form.error ? true : undefined}>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel htmlFor="password">Vault password</FieldLabel>
                 <Input
                   id="password"
                   name="password"
@@ -71,14 +65,9 @@ export function UnlockScreen(props: UnlockScreenProps) {
             {form.pending && <Spinner data-icon="inline-start" />}
             Unlock
           </Button>
-          <div className="flex w-full justify-between">
-            <Button variant="link" size="sm" onClick={props.onForgot}>
-              Forgot password
-            </Button>
-            <Button variant="link" size="sm" onClick={props.onDisconnect}>
-              Disconnect
-            </Button>
-          </div>
+          <Button variant="link" size="sm" onClick={props.onForgot}>
+            Forgot the vault password
+          </Button>
         </CardFooter>
       </Card>
     </AuthLayout>

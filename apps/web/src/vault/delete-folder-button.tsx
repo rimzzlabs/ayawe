@@ -14,41 +14,40 @@ import {
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
-import { deleteEnv } from "@/lib/api"
-import type { Session } from "@/lib/screen"
+import { deleteFolder, type FolderSummary } from "@/lib/api"
 
-interface DeleteEnvButtonProps {
-  session: Session
-  name: string
-  onDeleted: (name: string) => void
+interface DeleteFolderButtonProps {
+  folder: FolderSummary
+  onDeleted: (id: string) => void
 }
 
-export function DeleteEnvButton(props: DeleteEnvButtonProps) {
+export function DeleteFolderButton(props: DeleteFolderButtonProps) {
   const [pending, startTransition] = useTransition()
 
   function handleDelete() {
     startTransition(async () => {
-      const deleted = await deleteEnv(props.session.token, props.name)
+      const deleted = await deleteFolder(props.folder.id)
       if (!deleted.ok) {
         toast.add({ title: deleted.error.message, type: "error" })
         return
       }
-      toast.add({ title: `Deleted ${props.name}`, type: "success" })
-      props.onDeleted(props.name)
+      toast.add({ title: `Deleted ${props.folder.name}`, type: "success" })
+      props.onDeleted(props.folder.id)
     })
   }
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger render={<Button type="button" variant="destructive" />}>
-        <TrashIcon data-icon="inline-start" />
-        Delete
+      <AlertDialogTrigger
+        render={<Button variant="ghost" size="icon-sm" aria-label="Delete folder" />}
+      >
+        <TrashIcon />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete {props.name}?</AlertDialogTitle>
+          <AlertDialogTitle>Delete {props.folder.name}?</AlertDialogTitle>
           <AlertDialogDescription>
-            This removes the env file from the server. You cannot undo this.
+            This deletes the folder and all its secrets. You cannot undo this.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

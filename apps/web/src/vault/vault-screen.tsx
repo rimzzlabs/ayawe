@@ -1,78 +1,98 @@
-import { open } from "@ayawe/crypto/seal"
-import { LockIcon } from "@phosphor-icons/react"
+import { LockIcon, SignOutIcon } from "@phosphor-icons/react"
 import { useState } from "react"
+import { AppHeader } from "@/components/app-header"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/toast"
-import { Wordmark } from "@/components/wordmark"
-import { fetchEnv } from "@/lib/api"
+import { UserBadge } from "@/components/user-badge"
+import { createFolder, type FolderSummary, fetchFolder } from "@/lib/api"
+import type { Entry } from "@/lib/dotenv"
 import type { Session } from "@/lib/screen"
-import { EnvEditor } from "@/vault/env-editor"
-import { VaultList } from "@/vault/vault-list"
+import { openEntries } from "@/lib/secrets"
+import { FolderList } from "@/vault/folder-list"
+import { FolderScreen } from "@/vault/folder-screen"
 
-type View = { kind: "list" } | { kind: "edit"; name: string | null; content: string }
+type View = { kind: "list" } | { kind: "folder"; folder: FolderSummary; entries: Entry[] }
 
 interface VaultScreenProps {
   session: Session
+  folders: FolderSummary[]
   onLock: () => void
+  onSignOut: () => void
+}
+
+function sortFolders(folders: FolderSummary[]) {
+  return folders.toSorted((a, b) => a.name.localeCompare(b.name))
 }
 
 export function VaultScreen(props: VaultScreenProps) {
-  const [names, setNames] = useState(props.session.names)
+  const [folders, setFolders] = useState(props.folders)
   const [view, setView] = useState<View>({ kind: "list" })
-  const [openingName, setOpeningName] = useState<string | null>(null)
+  const [openingId, setOpeningId] = useState<string | null>(null)
 
-  async function handleOpen(name: string) {
-    setOpeningName(name)
-    const sealed = await fetchEnv(props.session.token, name)
-    const opened = sealed.ok ? await open(props.session.dataKey, sealed.value) : sealed
-    setOpeningName(null)
+  async function handleOpen(summary: FolderSummary) {
+    setOpeningId(summary.id)
+    const folder = await fetchFolder(summary.id)
+    const entries = folder.ok
+      ? await openEntries(props.session.dataKey, folder.value.secrets)
+      : folder
+    setOpeningId(null)
 
-    if (!opened.ok) {
-      toast.add({ title: opened.error.message, type: "error" })
+    if (!entries.ok) {
+      toast.add({ title: entries.error.message, type: "error" })
       return
     }
-    setView({ kind: "edit", name, content: opened.value })
+    setView({ kind: "folder", folder: summary, entries: entries.value })
   }
 
-  function handleSaved(name: string, content: string) {
-    setNames((current) =>
-      current.includes(name) ? current : [...current, name].toSorted((a, b) => a.localeCompare(b)),
+  async function handleCreate(name: string) {
+    const created = await createFolder(name)
+    if (!created.ok) return created.error.message
+
+    setFolders((current) => sortFolders([...current, created.value]))
+    setView({ kind: "folder", folder: created.value, entries: [] })
+    return undefined
+  }
+
+  function handleChanged(folder: FolderSummary) {
+    setFolders((current) =>
+      sortFolders(current.map((item) => (item.id === folder.id ? folder : item))),
     )
-    setView({ kind: "edit", name, content })
+    setView((current) => (current.kind === "folder" ? { ...current, folder } : current))
   }
 
-  function handleDeleted(name: string) {
-    setNames((current) => current.filter((item) => item !== name))
+  function handleDeleted(id: string) {
+    setFolders((current) => current.filter((item) => item.id !== id))
     setView({ kind: "list" })
   }
 
   return (
-    <div className="mx-auto flex min-h-svh w-full max-w-2xl flex-col gap-10 p-4 sm:p-8">
-      <header className="flex items-center justify-between gap-4">
-        <Wordmark />
-        <Button variant="ghost" size="sm" onClick={props.onLock}>
-          <LockIcon data-icon="inline-start" />
-          Lock
+    <div className="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-10 p-4 sm:p-8">
+      <AppHeader>
+        <UserBadge me={props.session.me} />
+        <Button variant="ghost" size="icon-sm" aria-label="Lock vault" onClick={props.onLock}>
+          <LockIcon />
         </Button>
-      </header>
+        <Button variant="ghost" size="icon-sm" aria-label="Sign out" onClick={props.onSignOut}>
+          <SignOutIcon />
+        </Button>
+      </AppHeader>
       <main>
         {view.kind === "list" ? (
-          <VaultList
-            names={names}
-            openingName={openingName}
+          <FolderList
+            folders={folders}
+            openingId={openingId}
             onOpen={handleOpen}
-            onNew={() => setView({ kind: "edit", name: null, content: "" })}
+            onCreate={handleCreate}
           />
         ) : (
-          <EnvEditor
-            key={view.name ?? "new"}
+          <FolderScreen
+            key={view.folder.id}
             session={props.session}
-            name={view.name}
-            existingNames={names}
-            initialContent={view.content}
-            onSaved={handleSaved}
+            folder={view.folder}
+            entries={view.entries}
+            onChanged={handleChanged}
             onDeleted={handleDeleted}
-            onClose={() => setView({ kind: "list" })}
+            onBack={() => setView({ kind: "list" })}
           />
         )}
       </main>

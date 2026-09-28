@@ -7,14 +7,27 @@ tags: ["worker"]
 dependsOn: ["crypto"]
 
 tasks:
+  db-migrate-local:
+    command: "wrangler d1 migrations apply ayawe --local"
+    inputs: ["migrations/**/*"]
+    options:
+      cache: false
+      runInCI: false
+
+  db-migrate-remote:
+    command: "wrangler d1 migrations apply ayawe --remote"
+    options:
+      cache: false
+      runInCI: false
+
   dev:
     command: "wrangler dev"
     preset: "server"
-    deps: ["web:build"]
+    deps: ["web:build", "~:db-migrate-local"]
 
   deploy:
     command: "wrangler deploy"
-    deps: ["web:build", "~:typecheck"]
+    deps: ["web:build", "~:typecheck", "~:db-migrate-remote"]
     options:
       cache: false
       runInCI: false

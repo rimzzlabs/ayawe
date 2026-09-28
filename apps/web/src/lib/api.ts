@@ -2,18 +2,25 @@ import { isKeyring, type Keyring } from "@ayawe/crypto/keyring"
 import { err, ok, type Result } from "@ayawe/crypto/result"
 import { isSealed, type Sealed } from "@ayawe/crypto/seal"
 
-export const ENV_NAME_PATTERN = /^[a-z0-9._-]{1,64}$/i
-
-interface RequestParams {
-  token: string
-  path: string
-  init?: RequestInit
+export interface Me {
+  login: string
+  avatarUrl: string | null
+  hasKeyring: boolean
 }
 
-interface SaveEnvParams {
-  token: string
+export interface Providers {
+  github: boolean
+  dev: boolean
+}
+
+export interface FolderSummary {
+  id: string
   name: string
-  sealed: Sealed
+  updatedAt: number
+}
+
+export interface Folder extends FolderSummary {
+  secrets: Sealed | null
 }
 
 async function readError(res: Response) {
@@ -25,28 +32,55 @@ async function readError(res: Response) {
   }
 }
 
-async function request(params: RequestParams): Promise<Result<Response>> {
+async function request(path: string, init?: RequestInit): Promise<Result<Response>> {
   try {
-    const res = await fetch(`/api${params.path}`, {
-      ...params.init,
-      headers: { Authorization: `Bearer ${params.token}`, "Content-Type": "application/json" },
-    })
-    if (res.status === 401) return err(new Error("The access token is wrong"))
-    return ok(res)
+    const headers = init?.body ? { "Content-Type": "application/json" } : undefined
+    return ok(await fetch(`/api${path}`, { ...init, headers }))
   } catch {
     return err(new Error("The server is not reachable"))
   }
 }
 
-async function requestEmpty(params: RequestParams): Promise<Result<null>> {
-  const result = await request(params)
+async function requestJson<T>(path: string, init?: RequestInit): Promise<Result<T>> {
+  const result = await request(path, init)
+  if (!result.ok) return result
+  if (!result.value.ok) return err(await readError(result.value))
+  return ok((await result.value.json()) as T)
+}
+
+async function requestEmpty(path: string, init?: RequestInit): Promise<Result<null>> {
+  const result = await request(path, init)
   if (!result.ok) return result
   if (!result.value.ok) return err(await readError(result.value))
   return ok(null)
 }
 
-export async function fetchKeyring(token: string): Promise<Result<Keyring | null>> {
-  const result = await request({ token, path: "/keyring" })
+function jsonBody(method: string, body: unknown): RequestInit {
+  return { method, body: JSON.stringify(body) }
+}
+
+export async function fetchMe(): Promise<Result<Me | null>> {
+  const result = await request("/me")
+  if (!result.ok) return result
+  if (result.value.status === 401) return ok(null)
+  if (!result.value.ok) return err(await readError(result.value))
+  return ok((await result.value.json()) as Me)
+}
+
+export function fetchProviders() {
+  return requestJson<Providers>("/auth/providers")
+}
+
+export function devSignIn() {
+  return requestEmpty("/auth/dev", { method: "POST" })
+}
+
+export function signOut() {
+  return requestEmpty("/me/sign-out", { method: "POST" })
+}
+
+export async function fetchKeyring(): Promise<Result<Keyring | null>> {
+  const result = await request("/keyring")
   if (!result.ok) return result
   if (result.value.status === 404) return ok(null)
   if (!result.value.ok) return err(await readError(result.value))
@@ -55,44 +89,36 @@ export async function fetchKeyring(token: string): Promise<Result<Keyring | null
   return isKeyring(body) ? ok(body) : err(new Error("The server returned a damaged keyring"))
 }
 
-export function saveKeyring(token: string, keyring: Keyring) {
-  return requestEmpty({
-    token,
-    path: "/keyring",
-    init: { method: "PUT", body: JSON.stringify(keyring) },
-  })
+export function saveKeyring(keyring: Keyring) {
+  return requestEmpty("/keyring", jsonBody("PUT", keyring))
 }
 
-export async function listEnvs(token: string): Promise<Result<string[]>> {
-  const result = await request({ token, path: "/envs" })
+export function listFolders() {
+  return requestJson<FolderSummary[]>("/folders")
+}
+
+export function createFolder(name: string) {
+  return requestJson<FolderSummary>("/folders", jsonBody("POST", { name }))
+}
+
+export async function fetchFolder(id: string): Promise<Result<Folder>> {
+  const result = await requestJson<Folder>(`/folders/${id}`)
   if (!result.ok) return result
-  if (!result.value.ok) return err(await readError(result.value))
-
-  const names = (await result.value.json()) as string[]
-  return ok(names.toSorted((a, b) => a.localeCompare(b)))
+  const secrets = result.value.secrets
+  if (secrets !== null && !isSealed(secrets)) {
+    return err(new Error("The server returned damaged secrets"))
+  }
+  return result
 }
 
-export async function fetchEnv(token: string, name: string): Promise<Result<Sealed>> {
-  const result = await request({ token, path: `/envs/${encodeURIComponent(name)}` })
-  if (!result.ok) return result
-  if (!result.value.ok) return err(await readError(result.value))
-
-  const body: unknown = await result.value.json()
-  return isSealed(body) ? ok(body) : err(new Error("The server returned a damaged value"))
+export function renameFolder(id: string, name: string) {
+  return requestJson<FolderSummary>(`/folders/${id}`, jsonBody("PATCH", { name }))
 }
 
-export function saveEnv(params: SaveEnvParams) {
-  return requestEmpty({
-    token: params.token,
-    path: `/envs/${encodeURIComponent(params.name)}`,
-    init: { method: "PUT", body: JSON.stringify(params.sealed) },
-  })
+export function saveSecrets(id: string, sealed: Sealed) {
+  return requestJson<{ updatedAt: number }>(`/folders/${id}/secrets`, jsonBody("PUT", sealed))
 }
 
-export function deleteEnv(token: string, name: string) {
-  return requestEmpty({
-    token,
-    path: `/envs/${encodeURIComponent(name)}`,
-    init: { method: "DELETE" },
-  })
+export function deleteFolder(id: string) {
+  return requestEmpty(`/folders/${id}`, { method: "DELETE" })
 }

@@ -11,11 +11,14 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { toast } from "@/components/ui/toast"
+import type { Me } from "@/lib/api"
 import { copyText } from "@/lib/clipboard"
 
 interface RecoveryCodeScreenProps {
+  me: Me
   recoveryCode: string
   onContinue: () => void
+  onSignOut: () => void
 }
 
 export function RecoveryCodeScreen(props: RecoveryCodeScreenProps) {
@@ -29,11 +32,13 @@ export function RecoveryCodeScreen(props: RecoveryCodeScreenProps) {
   }
 
   return (
-    <AuthLayout>
+    <AuthLayout me={props.me} onSignOut={props.onSignOut}>
       <Card>
         <CardHeader>
           <CardTitle>Save your recovery code</CardTitle>
-          <CardDescription>If you forget the password, this code opens the vault.</CardDescription>
+          <CardDescription>
+            If you forget the vault password, this code opens the vault.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <code className="break-all bg-muted p-4 font-mono text-sm leading-relaxed">

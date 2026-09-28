@@ -1,1 +1,12 @@
-AYAWE_TOKEN=dev-token
+APP_URL=http://localhost:5173
+
+# Sign in as a fake "dev" user without GitHub. Works only when APP_URL is on localhost.
+DEV_LOGIN=true
+
+# Optional for local dev. Create an OAuth app at https://github.com/settings/developers
+# with the callback URL http://localhost:5173/api/auth/github/callback
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+
+# Optional. Comma-separated GitHub logins that can sign in. Empty means everyone.
+ALLOWED_GITHUB_USERS=

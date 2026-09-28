@@ -1,19 +1,16 @@
+import { WarningIcon } from "@phosphor-icons/react"
 import { Suspense, use, useState } from "react"
-import { ConnectScreen } from "@/auth/connect-screen"
 import { RecoverScreen } from "@/auth/recover-screen"
 import { RecoveryCodeScreen } from "@/auth/recovery-code-screen"
 import { SetupScreen } from "@/auth/setup-screen"
 import { UnlockScreen } from "@/auth/unlock-screen"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Spinner } from "@/components/ui/spinner"
 import { Toaster } from "@/components/ui/toast"
-import { type Screen, screenForToken } from "@/lib/screen"
-import { clearToken, readToken } from "@/lib/token-storage"
+import { LandingScreen } from "@/landing/landing-screen"
+import { signOut } from "@/lib/api"
+import { landingScreen, resolveStartScreen } from "@/lib/screen"
 import { VaultScreen } from "@/vault/vault-screen"
-
-async function resolveStartScreen(): Promise<Screen> {
-  const token = readToken()
-  return token ? screenForToken(token) : { kind: "connect" }
-}
 
 const startScreenPromise = resolveStartScreen()
 
@@ -37,63 +34,75 @@ function Screens() {
   const startScreen = use(startScreenPromise)
   const [screen, setScreen] = useState(startScreen)
 
-  function handleDisconnect() {
-    clearToken()
-    setScreen({ kind: "connect" })
+  async function handleSignOut() {
+    await signOut()
+    setScreen(await landingScreen())
   }
 
   switch (screen.kind) {
-    case "connect":
-      return <ConnectScreen error={screen.error} onConnected={setScreen} />
+    case "landing":
+      return (
+        <LandingScreen providers={screen.providers} error={screen.error} onSignedIn={setScreen} />
+      )
     case "setup":
       return (
         <SetupScreen
-          token={screen.token}
+          me={screen.me}
           onCreated={(session, recoveryCode) =>
             setScreen({ kind: "recovery-code", session, recoveryCode })
           }
+          onSignOut={handleSignOut}
         />
       )
     case "recovery-code":
       return (
         <RecoveryCodeScreen
+          me={screen.session.me}
           recoveryCode={screen.recoveryCode}
-          onContinue={() => setScreen({ kind: "vault", session: screen.session })}
+          onContinue={() => setScreen({ kind: "vault", session: screen.session, folders: [] })}
+          onSignOut={handleSignOut}
         />
       )
     case "unlock":
       return (
         <UnlockScreen
-          token={screen.token}
+          me={screen.me}
           keyring={screen.keyring}
-          onUnlocked={(session) => setScreen({ kind: "vault", session })}
-          onForgot={() =>
-            setScreen({ kind: "recover", token: screen.token, keyring: screen.keyring })
-          }
-          onDisconnect={handleDisconnect}
+          onUnlocked={setScreen}
+          onForgot={() => setScreen({ kind: "recover", me: screen.me, keyring: screen.keyring })}
+          onSignOut={handleSignOut}
         />
       )
     case "recover":
       return (
         <RecoverScreen
-          token={screen.token}
+          me={screen.me}
           keyring={screen.keyring}
-          onRecovered={(session) => setScreen({ kind: "vault", session })}
-          onBack={() => setScreen({ kind: "unlock", token: screen.token, keyring: screen.keyring })}
+          onRecovered={setScreen}
+          onBack={() => setScreen({ kind: "unlock", me: screen.me, keyring: screen.keyring })}
+          onSignOut={handleSignOut}
         />
       )
     case "vault":
       return (
         <VaultScreen
           session={screen.session}
+          folders={screen.folders}
           onLock={() =>
-            setScreen({
-              kind: "unlock",
-              token: screen.session.token,
-              keyring: screen.session.keyring,
-            })
+            setScreen({ kind: "unlock", me: screen.session.me, keyring: screen.session.keyring })
           }
+          onSignOut={handleSignOut}
         />
+      )
+    case "error":
+      return (
+        <main className="mx-auto flex min-h-svh max-w-md items-center p-4">
+          <Alert variant="destructive">
+            <WarningIcon />
+            <AlertTitle>ayawe cannot start</AlertTitle>
+            <AlertDescription>{screen.message}. Reload the page to try again.</AlertDescription>
+          </Alert>
+        </main>
       )
   }
 }
