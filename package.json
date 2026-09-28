@@ -1,6 +1,7 @@
 {
   "name": "ayawe",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@10.30.1",
   "devDependencies": {
