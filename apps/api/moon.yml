@@ -14,11 +14,12 @@ tasks:
       cache: false
       runInCI: false
 
+  # The deploy workflow runs with CI=true, so these tasks must run in CI.
   db-migrate-remote:
     command: "wrangler d1 migrations apply ayawe --remote"
     options:
       cache: false
-      runInCI: false
+      runInCI: true
 
   dev:
     command: "wrangler dev"
@@ -30,4 +31,4 @@ tasks:
     deps: ["web:build", "~:typecheck", "~:db-migrate-remote"]
     options:
       cache: false
-      runInCI: false
+      runInCI: true
