@@ -1,5 +1,4 @@
 import { type ReactElement, useState } from "react"
-import { DiscardChangesDialog } from "@/components/discard-changes-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -44,7 +43,13 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
   function handleOpenChange(nextOpen: boolean) {
     if (nextOpen) {
       setName(props.defaultName ?? "")
+      setConfirmingDiscard(false)
       setOpen(true)
+      return
+    }
+    // Esc on the confirmation means "keep editing", not "close everything".
+    if (confirmingDiscard) {
+      setConfirmingDiscard(false)
       return
     }
     if (isDirty && !form.pending) {
@@ -54,51 +59,68 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
     setOpen(false)
   }
 
-  function handleDiscard() {
-    setConfirmingDiscard(false)
-    setOpen(false)
-  }
-
+  // The confirmation replaces the form inside the same dialog. A second, stacked dialog
+  // gets no backdrop of its own, so the parent dialog showed through around it.
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={props.trigger} />
       <DialogContent showCloseButton={false}>
-        <form className="flex flex-col gap-6" onSubmit={form.onSubmit}>
-          <DialogHeader>
-            <DialogTitle>{props.title}</DialogTitle>
-            <DialogDescription>{props.description}</DialogDescription>
-          </DialogHeader>
-          <FieldGroup>
-            <Field data-invalid={form.error ? true : undefined}>
-              <FieldLabel htmlFor="folder-name">Name</FieldLabel>
-              <Input
-                id="folder-name"
-                name="name"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="my-app"
-                autoComplete="off"
-                maxLength={64}
+        {confirmingDiscard ? (
+          <div className="flex flex-col gap-6">
+            <DialogHeader>
+              <DialogTitle>Discard unsaved changes?</DialogTitle>
+              <DialogDescription id="discard-description">
+                You typed a name that isn't saved yet. If you leave now, it's gone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
                 autoFocus
-                aria-invalid={form.error ? true : undefined}
-                aria-describedby={form.error ? "folder-name-error" : undefined}
-              />
-              <FieldError id="folder-name-error">{form.error}</FieldError>
-            </Field>
-          </FieldGroup>
-          <DialogFooter>
-            <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
-            <Button type="submit" disabled={form.pending} focusableWhenDisabled>
-              {form.pending && <Spinner data-icon="inline-start" />}
-              {props.submitLabel}
-            </Button>
-          </DialogFooter>
-        </form>
-        <DiscardChangesDialog
-          open={confirmingDiscard}
-          onKeepEditing={() => setConfirmingDiscard(false)}
-          onDiscard={handleDiscard}
-        />
+                aria-describedby="discard-description"
+                onClick={() => setConfirmingDiscard(false)}
+              >
+                Keep editing
+              </Button>
+              <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
+                Discard
+              </Button>
+            </DialogFooter>
+          </div>
+        ) : (
+          <form className="flex flex-col gap-6" onSubmit={form.onSubmit}>
+            <DialogHeader>
+              <DialogTitle>{props.title}</DialogTitle>
+              <DialogDescription>{props.description}</DialogDescription>
+            </DialogHeader>
+            <FieldGroup>
+              <Field data-invalid={form.error ? true : undefined}>
+                <FieldLabel htmlFor="folder-name">Name</FieldLabel>
+                <Input
+                  id="folder-name"
+                  name="name"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="my-app"
+                  autoComplete="off"
+                  maxLength={64}
+                  autoFocus
+                  aria-invalid={form.error ? true : undefined}
+                  aria-describedby={form.error ? "folder-name-error" : undefined}
+                />
+                <FieldError id="folder-name-error">{form.error}</FieldError>
+              </Field>
+            </FieldGroup>
+            <DialogFooter>
+              <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
+              <Button type="submit" disabled={form.pending} focusableWhenDisabled>
+                {form.pending && <Spinner data-icon="inline-start" />}
+                {props.submitLabel}
+              </Button>
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   )
