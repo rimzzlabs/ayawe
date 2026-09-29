@@ -1,4 +1,10 @@
-import { GithubLogoIcon, TerminalIcon, WarningIcon } from "@phosphor-icons/react"
+import {
+  ClipboardTextIcon,
+  GithubLogoIcon,
+  PasswordIcon,
+  TerminalIcon,
+  WarningIcon,
+} from "@phosphor-icons/react"
 import { useState, useTransition } from "react"
 import { AppHeader } from "@/components/app-header"
 import { PageHeading } from "@/components/page-heading"
@@ -11,14 +17,17 @@ import { type Screen, screenForUser } from "@/lib/screen"
 
 const STEPS = [
   {
+    icon: GithubLogoIcon,
     title: "Sign in with GitHub",
     text: "Just so ayawe knows it's you. GitHub never touches your secrets.",
   },
   {
+    icon: PasswordIcon,
     title: "Pick a vault password",
     text: "It locks everything right in your browser. You also get a recovery code, just in case.",
   },
   {
+    icon: ClipboardTextIcon,
     title: "Paste your .env",
     text: "One folder per project. Paste the whole file in, copy it back out anywhere.",
   },
@@ -106,11 +115,9 @@ export function LandingScreen(props: LandingScreenProps) {
         </div>
 
         <ol className="grid gap-6 border-t pt-8 sm:grid-cols-3">
-          {STEPS.map((step, index) => (
+          {STEPS.map((step) => (
             <li key={step.title} className="flex flex-col gap-1">
-              <span aria-hidden="true" className="font-mono text-muted-foreground text-xs">
-                0{index + 1}
-              </span>
+              <step.icon className="mb-1 size-5 text-muted-foreground" aria-hidden="true" />
               <span className="font-medium">{step.title}</span>
               <span className="text-muted-foreground text-sm">{step.text}</span>
             </li>
