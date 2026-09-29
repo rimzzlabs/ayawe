@@ -53,7 +53,7 @@ export function LandingScreen(props: LandingScreenProps) {
       <main className="flex flex-1 flex-col justify-center gap-10">
         <div className="flex max-w-xl flex-col gap-4">
           <PageHeading className="font-heading text-4xl leading-tight outline-none sm:text-5xl">
-            Your env files, on every machine you use.
+            Dead Simple Vault For Your Secret
           </PageHeading>
           <p className="text-muted-foreground">
             Stop sending secrets to yourself in chat apps. ayawe keeps your env variables in one
