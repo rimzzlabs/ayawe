@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowRightIcon, type Icon } from "@phosphor-icons/react"
+import { ArrowDownIcon, type Icon } from "@phosphor-icons/react"
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
@@ -78,9 +78,13 @@ interface StepDownProps {
 
 /** A vertical arrow between two nodes, with what happens on the way. */
 export function StepDown(props: StepDownProps) {
+  // Same box as Node (1px border, px-3, a 16px icon column, gap-3), so the arrow lines up
+  // under the node icons and the text lines up under the node labels.
   return (
-    <div className="flex items-center gap-3 py-1.5 pl-5">
-      <ArrowDownIcon className="size-3.5 text-muted-foreground" aria-hidden="true" />
+    <div className="flex items-center gap-3 border-transparent border-x px-3 py-1.5">
+      <span className="flex w-4 shrink-0 justify-center">
+        <ArrowDownIcon className="size-3.5 text-muted-foreground" aria-hidden="true" />
+      </span>
       <span className="font-mono text-muted-foreground text-xs">{props.children}</span>
     </div>
   )
@@ -91,16 +95,16 @@ interface CrossingProps {
   children: ReactNode
 }
 
-/** The trip between the two zones: an arrow down on phones, an arrow right on wide screens. */
+/** The trip between the two zones: one centered column from the device down to the server. */
 export function Crossing(props: CrossingProps) {
   return (
-    <div className="flex items-center justify-center gap-3 py-3 md:flex-col md:px-2 md:py-0">
-      <Marker number={props.marker} />
-      <span className="max-w-32 text-center font-mono text-muted-foreground text-xs">
-        {props.children}
+    <div className="flex flex-col items-center gap-2 py-3">
+      <span aria-hidden="true" className="h-4 w-px bg-border" />
+      <span className="flex items-center gap-2">
+        <Marker number={props.marker} />
+        <span className="font-mono text-muted-foreground text-xs">{props.children}</span>
       </span>
-      <ArrowDownIcon className="size-4 text-muted-foreground md:hidden" aria-hidden="true" />
-      <ArrowRightIcon className="hidden size-4 text-muted-foreground md:block" aria-hidden="true" />
+      <ArrowDownIcon className="size-4 text-muted-foreground" aria-hidden="true" />
     </div>
   )
 }

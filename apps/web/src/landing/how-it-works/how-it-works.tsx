@@ -41,7 +41,7 @@ export function HowItWorks() {
       </div>
 
       <figure className="flex flex-col gap-3">
-        <div className="grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center">
+        <div className="flex flex-col">
           <Zone icon={DevicesIcon} title="Your device" note="Plain text lives here">
             <Node icon={PasswordIcon} label="Vault password" value="••••••••••" marker={1} />
             <StepDown>PBKDF2 ×600k</StepDown>
