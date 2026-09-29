@@ -11,15 +11,15 @@ import { type Screen, screenForUser } from "@/lib/screen"
 const STEPS = [
   {
     title: "Sign in with GitHub",
-    text: "GitHub only tells ayawe who you are. It never sees your secrets.",
+    text: "Just so ayawe knows it's you. GitHub never touches your secrets.",
   },
   {
-    title: "Set a vault password",
-    text: "Your browser uses it to encrypt everything. The server never gets it.",
+    title: "Pick a vault password",
+    text: "It locks everything right in your browser. You also get a recovery code, just in case.",
   },
   {
     title: "Paste your .env",
-    text: "Make a folder for each project. Copy the secrets out on any device.",
+    text: "One folder per project. Paste the whole file in, copy it back out anywhere.",
   },
 ]
 
@@ -56,15 +56,16 @@ export function LandingScreen(props: LandingScreenProps) {
             Dead Simple Vault For Your Secret
           </PageHeading>
           <p className="text-muted-foreground">
-            Stop sending secrets to yourself in chat apps. ayawe keeps your env variables in one
-            place, encrypted in your browser before they leave it.
+            No more pasting .env files into Telegram and deleting them after. Put them here once,
+            grab them from any machine. It all gets encrypted in your browser, so the server only
+            ever sees gibberish.
           </p>
         </div>
 
         {error && (
           <Alert variant="destructive">
             <WarningIcon />
-            <AlertTitle>Sign-in failed</AlertTitle>
+            <AlertTitle>Couldn't sign you in</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -117,8 +118,8 @@ export function LandingScreen(props: LandingScreenProps) {
       </main>
 
       <footer className="flex flex-wrap justify-between gap-2 text-muted-foreground text-xs">
-        <span>“Aya wé” is Sundanese for “it’s somewhere”.</span>
-        <span>Open source, MIT license.</span>
+        <span>“Aya wé” is Sundanese for “it’s around here somewhere.”</span>
+        <span>Free and open source. MIT licensed.</span>
       </footer>
     </div>
   )
