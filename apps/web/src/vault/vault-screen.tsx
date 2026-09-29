@@ -1,9 +1,9 @@
 import { LockIcon, SignOutIcon } from "@phosphor-icons/react"
 import { useState } from "react"
 import { AppHeader } from "@/components/app-header"
-import { Button } from "@/components/ui/button"
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { toast } from "@/components/ui/toast"
-import { UserBadge } from "@/components/user-badge"
+import { UserMenu } from "@/components/user-menu"
 import { createFolder, type FolderSummary, fetchFolder } from "@/lib/api"
 import type { Entry } from "@/lib/dotenv"
 import type { Session } from "@/lib/screen"
@@ -68,13 +68,16 @@ export function VaultScreen(props: VaultScreenProps) {
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-10 p-4 sm:p-8">
       <AppHeader>
-        <UserBadge me={props.session.me} />
-        <Button variant="ghost" size="icon-sm" aria-label="Lock vault" onClick={props.onLock}>
-          <LockIcon />
-        </Button>
-        <Button variant="ghost" size="icon-sm" aria-label="Sign out" onClick={props.onSignOut}>
-          <SignOutIcon />
-        </Button>
+        <UserMenu me={props.session.me}>
+          <DropdownMenuItem onClick={props.onLock}>
+            <LockIcon />
+            Lock vault
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={props.onSignOut}>
+            <SignOutIcon />
+            Sign out
+          </DropdownMenuItem>
+        </UserMenu>
       </AppHeader>
       <main>
         {view.kind === "list" ? (
