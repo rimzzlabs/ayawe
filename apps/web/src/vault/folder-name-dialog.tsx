@@ -1,4 +1,5 @@
 import { type ReactElement, useState } from "react"
+import { DiscardChangesDialog } from "@/components/discard-changes-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -27,6 +28,9 @@ interface FolderNameDialogProps {
 
 export function FolderNameDialog(props: FolderNameDialogProps) {
   const [open, setOpen] = useState(false)
+  const [name, setName] = useState(props.defaultName ?? "")
+  const [confirmingDiscard, setConfirmingDiscard] = useState(false)
+  const isDirty = name !== (props.defaultName ?? "")
 
   const form = useFormAction(async (formData) => {
     const name = readField(formData, "name")
@@ -37,8 +41,26 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
     return error
   })
 
+  function handleOpenChange(nextOpen: boolean) {
+    if (nextOpen) {
+      setName(props.defaultName ?? "")
+      setOpen(true)
+      return
+    }
+    if (isDirty && !form.pending) {
+      setConfirmingDiscard(true)
+      return
+    }
+    setOpen(false)
+  }
+
+  function handleDiscard() {
+    setConfirmingDiscard(false)
+    setOpen(false)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={props.trigger} />
       <DialogContent showCloseButton={false}>
         <form className="flex flex-col gap-6" onSubmit={form.onSubmit}>
@@ -52,7 +74,8 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
               <Input
                 id="folder-name"
                 name="name"
-                defaultValue={props.defaultName}
+                value={name}
+                onChange={(event) => setName(event.target.value)}
                 placeholder="my-app"
                 autoComplete="off"
                 maxLength={64}
@@ -71,6 +94,11 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
             </Button>
           </DialogFooter>
         </form>
+        <DiscardChangesDialog
+          open={confirmingDiscard}
+          onKeepEditing={() => setConfirmingDiscard(false)}
+          onDiscard={handleDiscard}
+        />
       </DialogContent>
     </Dialog>
   )

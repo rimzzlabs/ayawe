@@ -18,6 +18,7 @@ import {
 } from "@/lib/dotenv"
 import type { Session } from "@/lib/screen"
 import { sealEntries } from "@/lib/secrets"
+import { useUnsavedChanges } from "@/lib/unsaved-changes"
 import { SecretValueInput } from "@/vault/secret-value-input"
 
 interface SecretsFormValues {
@@ -99,6 +100,7 @@ export function SecretsForm(props: SecretsFormProps) {
   }
 
   const { isDirty, isSubmitting } = form.formState
+  useUnsavedChanges(isDirty)
 
   return (
     <form className="flex flex-col gap-6" onSubmit={form.handleSubmit(handleSave)}>

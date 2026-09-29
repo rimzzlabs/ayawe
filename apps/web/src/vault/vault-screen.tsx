@@ -8,6 +8,7 @@ import { createFolder, type FolderSummary, fetchFolder } from "@/lib/api"
 import type { Entry } from "@/lib/dotenv"
 import type { Session } from "@/lib/screen"
 import { openEntries } from "@/lib/secrets"
+import { UnsavedChangesProvider, useConfirmLeave } from "@/lib/unsaved-changes"
 import { FolderList } from "@/vault/folder-list"
 import { FolderScreen } from "@/vault/folder-screen"
 
@@ -25,6 +26,15 @@ function sortFolders(folders: FolderSummary[]) {
 }
 
 export function VaultScreen(props: VaultScreenProps) {
+  return (
+    <UnsavedChangesProvider>
+      <VaultContent {...props} />
+    </UnsavedChangesProvider>
+  )
+}
+
+function VaultContent(props: VaultScreenProps) {
+  const confirmLeave = useConfirmLeave()
   const [folders, setFolders] = useState(props.folders)
   const [view, setView] = useState<View>({ kind: "list" })
   const [openingId, setOpeningId] = useState<string | null>(null)
@@ -69,11 +79,11 @@ export function VaultScreen(props: VaultScreenProps) {
     <div className="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-10 p-4 sm:p-8">
       <AppHeader>
         <UserMenu me={props.session.me}>
-          <DropdownMenuItem onClick={props.onLock}>
+          <DropdownMenuItem onClick={() => confirmLeave(props.onLock)}>
             <LockIcon />
             Lock vault
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={props.onSignOut}>
+          <DropdownMenuItem onClick={() => confirmLeave(props.onSignOut)}>
             <SignOutIcon />
             Sign out
           </DropdownMenuItem>
@@ -95,7 +105,7 @@ export function VaultScreen(props: VaultScreenProps) {
             entries={view.entries}
             onChanged={handleChanged}
             onDeleted={handleDeleted}
-            onBack={() => setView({ kind: "list" })}
+            onBack={() => confirmLeave(() => setView({ kind: "list" }))}
           />
         )}
       </main>
