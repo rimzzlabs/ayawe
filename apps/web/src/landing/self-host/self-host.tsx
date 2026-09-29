@@ -1,9 +1,7 @@
 import type { ReactNode } from "react"
 import { CodeBlock } from "@/components/code-block"
 import { Marker } from "@/components/marker"
-
-// TODO: confirm the public repository URL before this page goes live.
-const REPO_URL = "https://github.com/rimzzlabs/ayawe"
+import { REPO_URL } from "@/lib/links"
 
 const WORKER_URL = "https://ayawe.<your-subdomain>.workers.dev"
 

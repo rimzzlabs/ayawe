@@ -11,6 +11,7 @@ import { PageHeading } from "@/components/page-heading"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
+import { GithubCard } from "@/landing/github-card/github-card"
 import { HowItWorks } from "@/landing/how-it-works/how-it-works"
 import { SelfHost } from "@/landing/self-host/self-host"
 import { devSignIn, fetchMe, type Providers } from "@/lib/api"
@@ -128,6 +129,8 @@ export function LandingScreen(props: LandingScreenProps) {
         <HowItWorks />
 
         <SelfHost />
+
+        <GithubCard />
       </main>
 
       <footer className="flex flex-wrap justify-between gap-2 text-muted-foreground text-xs">
