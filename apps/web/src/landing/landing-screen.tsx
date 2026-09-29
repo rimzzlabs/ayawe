@@ -1,9 +1,9 @@
 import { GithubLogoIcon, TerminalIcon, WarningIcon } from "@phosphor-icons/react"
 import { useState, useTransition } from "react"
+import { AppHeader } from "@/components/app-header"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { Wordmark } from "@/components/wordmark"
 import { devSignIn, fetchMe, type Providers } from "@/lib/api"
 import { type Screen, screenForUser } from "@/lib/screen"
 
@@ -47,9 +47,7 @@ export function LandingScreen(props: LandingScreenProps) {
 
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-12 p-4 sm:p-8">
-      <header>
-        <Wordmark />
-      </header>
+      <AppHeader />
 
       <main className="flex flex-1 flex-col justify-center gap-10">
         <div className="flex max-w-xl flex-col gap-4">
