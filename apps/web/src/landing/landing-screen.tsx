@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { HowItWorks } from "@/landing/how-it-works/how-it-works"
+import { SelfHost } from "@/landing/self-host/self-host"
 import { devSignIn, fetchMe, type Providers } from "@/lib/api"
 import { type Screen, screenForUser } from "@/lib/screen"
 
@@ -125,6 +126,8 @@ export function LandingScreen(props: LandingScreenProps) {
         </ol>
 
         <HowItWorks />
+
+        <SelfHost />
       </main>
 
       <footer className="flex flex-wrap justify-between gap-2 text-muted-foreground text-xs">

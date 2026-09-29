@@ -1,22 +1,7 @@
 import { ArrowDownIcon, type Icon } from "@phosphor-icons/react"
 import type { ReactNode } from "react"
+import { Marker } from "@/components/marker"
 import { cn } from "@/lib/utils"
-
-interface MarkerProps {
-  number: number
-}
-
-/** The step number. The same marker appears on the diagram and on the step list. */
-export function Marker(props: MarkerProps) {
-  return (
-    <span
-      aria-hidden="true"
-      className="flex size-5 shrink-0 items-center justify-center bg-foreground font-mono text-[0.7rem] text-background"
-    >
-      {props.number}
-    </span>
-  )
-}
 
 interface ZoneProps {
   icon: Icon

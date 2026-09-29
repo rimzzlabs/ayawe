@@ -7,7 +7,8 @@ import {
   LockSimpleIcon,
   PasswordIcon,
 } from "@phosphor-icons/react"
-import { Crossing, Marker, Node, StepDown, Zone } from "@/landing/how-it-works/diagram-parts"
+import { Marker } from "@/components/marker"
+import { Crossing, Node, StepDown, Zone } from "@/landing/how-it-works/diagram-parts"
 
 const STEPS = [
   {
