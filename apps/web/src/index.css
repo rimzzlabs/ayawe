@@ -24,7 +24,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.923 0.003 48.717);
   --input: oklch(0.923 0.003 48.717);
-  --ring: oklch(0.709 0.01 56.259);
+  --ring: oklch(0.553 0.013 58.071); /* stone-500: 4.8:1 on white, WCAG 1.4.11 needs 3:1 */
   --chart-1: oklch(0.869 0.005 56.366);
   --chart-2: oklch(0.553 0.013 58.071);
   --chart-3: oklch(0.444 0.011 73.639);
@@ -133,3 +133,18 @@
     color-scheme: dark;
   }
 }
+
+/* WCAG 2.3.3: follow the system setting to reduce motion.
+   `!important` is needed to override the transitions inside every component. */
+/* biome-ignore-start lint/complexity/noImportantStyles: reduced motion must win over component styles */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* biome-ignore-end lint/complexity/noImportantStyles: reduced motion must win over component styles */

@@ -1,5 +1,6 @@
 import { CopyIcon, WarningIcon } from "@phosphor-icons/react"
 import { AuthLayout } from "@/auth/auth-layout"
+import { PageHeading } from "@/components/page-heading"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -35,7 +36,9 @@ export function RecoveryCodeScreen(props: RecoveryCodeScreenProps) {
     <AuthLayout me={props.me} onSignOut={props.onSignOut}>
       <Card>
         <CardHeader>
-          <CardTitle>Save your recovery code</CardTitle>
+          <CardTitle>
+            <PageHeading className="outline-none">Save your recovery code</PageHeading>
+          </CardTitle>
           <CardDescription>
             If you forget the vault password, this code opens the vault.
           </CardDescription>

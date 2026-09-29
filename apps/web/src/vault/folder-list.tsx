@@ -1,4 +1,5 @@
 import { CaretRightIcon, FolderIcon, FolderPlusIcon } from "@phosphor-icons/react"
+import { PageHeading } from "@/components/page-heading"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -45,29 +46,36 @@ export function FolderList(props: FolderListProps) {
     />
   )
 
+  const heading = (
+    <div className="flex items-center justify-between gap-4">
+      <PageHeading>Folders</PageHeading>
+      {props.folders.length > 0 && createDialog}
+    </div>
+  )
+
   if (props.folders.length === 0) {
     return (
-      <Empty className="border">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <FolderIcon />
-          </EmptyMedia>
-          <EmptyTitle>Make your first folder</EmptyTitle>
-          <EmptyDescription>
-            Use one folder for each project. Then paste its .env file into the folder.
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>{createDialog}</EmptyContent>
-      </Empty>
+      <section className="flex flex-col gap-4">
+        {heading}
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <FolderIcon />
+            </EmptyMedia>
+            <EmptyTitle>Make your first folder</EmptyTitle>
+            <EmptyDescription>
+              Use one folder for each project. Then paste its .env file into the folder.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>{createDialog}</EmptyContent>
+        </Empty>
+      </section>
     )
   }
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="font-heading text-2xl">Folders</h1>
-        {createDialog}
-      </div>
+      {heading}
       <ul className="flex flex-col gap-2">
         {props.folders.map((folder) => (
           <li key={folder.id}>
@@ -78,8 +86,10 @@ export function FolderList(props: FolderListProps) {
               render={
                 <button
                   type="button"
-                  disabled={props.openingId !== null}
-                  onClick={() => props.onOpen(folder)}
+                  aria-busy={props.openingId === folder.id || undefined}
+                  onClick={() => {
+                    if (props.openingId === null) props.onOpen(folder)
+                  }}
                 />
               }
             >

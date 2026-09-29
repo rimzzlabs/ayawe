@@ -52,7 +52,12 @@ export function DeleteFolderButton(props: DeleteFolderButtonProps) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={handleDelete} disabled={pending}>
+          <AlertDialogAction
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={pending}
+            focusableWhenDisabled
+          >
             {pending && <Spinner data-icon="inline-start" />}
             Delete
           </AlertDialogAction>

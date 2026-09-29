@@ -1,6 +1,7 @@
 import { changePassword, type Keyring, unlockWithRecoveryCode } from "@ayawe/crypto/keyring"
 import { AuthLayout } from "@/auth/auth-layout"
 import { MIN_PASSWORD_LENGTH } from "@/auth/setup-screen"
+import { PageHeading } from "@/components/page-heading"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -53,11 +54,24 @@ export function RecoverScreen(props: RecoverScreenProps) {
     <AuthLayout me={props.me} onSignOut={props.onSignOut}>
       <Card>
         <CardHeader>
-          <CardTitle>Recover your vault</CardTitle>
+          <CardTitle>
+            <PageHeading className="outline-none" focusOnMount={false}>
+              Recover your vault
+            </PageHeading>
+          </CardTitle>
           <CardDescription>Use your recovery code to set a new vault password.</CardDescription>
         </CardHeader>
         <CardContent>
           <form id="recover-form" onSubmit={form.onSubmit}>
+            {/* Lets password managers save the vault password under the GitHub login. */}
+            <input
+              type="text"
+              name="username"
+              autoComplete="username"
+              value={props.me.login}
+              readOnly
+              hidden
+            />
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="code">Recovery code</FieldLabel>
@@ -78,14 +92,21 @@ export function RecoverScreen(props: RecoverScreenProps) {
                   type="password"
                   autoComplete="new-password"
                   aria-invalid={form.error ? true : undefined}
+                  aria-describedby={form.error ? "recover-error" : undefined}
                 />
-                <FieldError>{form.error}</FieldError>
+                <FieldError id="recover-error">{form.error}</FieldError>
               </Field>
             </FieldGroup>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
-          <Button type="submit" form="recover-form" className="w-full" disabled={form.pending}>
+          <Button
+            type="submit"
+            form="recover-form"
+            className="w-full"
+            disabled={form.pending}
+            focusableWhenDisabled
+          >
             {form.pending && <Spinner data-icon="inline-start" />}
             Set new password
           </Button>

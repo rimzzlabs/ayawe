@@ -40,7 +40,7 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={props.trigger} />
-      <DialogContent>
+      <DialogContent showCloseButton={false}>
         <form className="flex flex-col gap-6" onSubmit={form.onSubmit}>
           <DialogHeader>
             <DialogTitle>{props.title}</DialogTitle>
@@ -58,13 +58,14 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
                 maxLength={64}
                 autoFocus
                 aria-invalid={form.error ? true : undefined}
+                aria-describedby={form.error ? "folder-name-error" : undefined}
               />
-              <FieldError>{form.error}</FieldError>
+              <FieldError id="folder-name-error">{form.error}</FieldError>
             </Field>
           </FieldGroup>
           <DialogFooter>
             <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
-            <Button type="submit" disabled={form.pending}>
+            <Button type="submit" disabled={form.pending} focusableWhenDisabled>
               {form.pending && <Spinner data-icon="inline-start" />}
               {props.submitLabel}
             </Button>

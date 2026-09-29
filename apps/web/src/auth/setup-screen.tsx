@@ -1,5 +1,6 @@
 import { createKeyring } from "@ayawe/crypto/keyring"
 import { AuthLayout } from "@/auth/auth-layout"
+import { PageHeading } from "@/components/page-heading"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -48,7 +49,11 @@ export function SetupScreen(props: SetupScreenProps) {
     <AuthLayout me={props.me} onSignOut={props.onSignOut}>
       <Card>
         <CardHeader>
-          <CardTitle>Set your vault password</CardTitle>
+          <CardTitle>
+            <PageHeading className="outline-none" focusOnMount={false}>
+              Set your vault password
+            </PageHeading>
+          </CardTitle>
           <CardDescription>
             GitHub signed you in. This password encrypts your secrets in the browser. The server
             never sees it, so nobody can reset it for you.
@@ -56,17 +61,29 @@ export function SetupScreen(props: SetupScreenProps) {
         </CardHeader>
         <CardContent>
           <form id="setup-form" onSubmit={form.onSubmit}>
+            {/* Lets password managers save the vault password under the GitHub login. */}
+            <input
+              type="text"
+              name="username"
+              autoComplete="username"
+              value={props.me.login}
+              readOnly
+              hidden
+            />
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="password">Vault password</FieldLabel>
                 <Input
                   id="password"
+                  aria-describedby="setup-password-hint"
                   name="password"
                   type="password"
                   autoComplete="new-password"
                   autoFocus
                 />
-                <FieldDescription>Use {MIN_PASSWORD_LENGTH} or more characters.</FieldDescription>
+                <FieldDescription id="setup-password-hint">
+                  Use {MIN_PASSWORD_LENGTH} or more characters.
+                </FieldDescription>
               </Field>
               <Field data-invalid={form.error ? true : undefined}>
                 <FieldLabel htmlFor="confirm">Type it again</FieldLabel>
@@ -76,14 +93,21 @@ export function SetupScreen(props: SetupScreenProps) {
                   type="password"
                   autoComplete="new-password"
                   aria-invalid={form.error ? true : undefined}
+                  aria-describedby={form.error ? "setup-error" : undefined}
                 />
-                <FieldError>{form.error}</FieldError>
+                <FieldError id="setup-error">{form.error}</FieldError>
               </Field>
             </FieldGroup>
           </form>
         </CardContent>
         <CardFooter>
-          <Button type="submit" form="setup-form" className="w-full" disabled={form.pending}>
+          <Button
+            type="submit"
+            form="setup-form"
+            className="w-full"
+            disabled={form.pending}
+            focusableWhenDisabled
+          >
             {form.pending && <Spinner data-icon="inline-start" />}
             Create my vault
           </Button>

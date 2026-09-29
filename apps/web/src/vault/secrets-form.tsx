@@ -1,6 +1,6 @@
 import { CopyIcon, FloppyDiskIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react"
 import type { ClipboardEvent } from "react"
-import { Controller, useFieldArray, useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -48,6 +48,7 @@ export function SecretsForm(props: SecretsFormProps) {
     defaultValues: { entries: withBlankRow(props.initialEntries) },
   })
   const entries = useFieldArray({ control: form.control, name: "entries" })
+  const watchedEntries = useWatch({ control: form.control, name: "entries" })
 
   function handleKeyPaste(index: number, event: ClipboardEvent<HTMLInputElement>) {
     const text = event.clipboardData.getData("text")
@@ -138,9 +139,10 @@ export function SecretsForm(props: SecretsFormProps) {
                       spellCheck={false}
                       className="font-mono"
                       aria-invalid={fieldState.invalid || undefined}
+                      aria-describedby={fieldState.error ? `${row.id}-key-error` : undefined}
                       onPaste={(event) => handleKeyPaste(index, event)}
                     />
-                    <FieldError errors={[fieldState.error]} />
+                    <FieldError id={`${row.id}-key-error`} errors={[fieldState.error]} />
                   </Field>
                 )}
               />
@@ -161,7 +163,7 @@ export function SecretsForm(props: SecretsFormProps) {
                 variant="ghost"
                 size="icon-sm"
                 className="self-end sm:self-start"
-                aria-label={`Remove variable ${index + 1}`}
+                aria-label={`Remove ${watchedEntries[index]?.key.trim() || `variable ${index + 1}`}`}
                 onClick={() =>
                   entries.fields.length === 1
                     ? entries.replace([BLANK_ENTRY])
@@ -194,7 +196,7 @@ export function SecretsForm(props: SecretsFormProps) {
             <CopyIcon data-icon="inline-start" />
             Copy .env
           </Button>
-          <Button type="submit" disabled={!isDirty || isSubmitting}>
+          <Button type="submit" disabled={!isDirty || isSubmitting} focusableWhenDisabled>
             {isSubmitting ? (
               <Spinner data-icon="inline-start" />
             ) : (

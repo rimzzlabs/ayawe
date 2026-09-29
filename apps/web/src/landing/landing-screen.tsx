@@ -1,6 +1,7 @@
 import { GithubLogoIcon, TerminalIcon, WarningIcon } from "@phosphor-icons/react"
 import { useState, useTransition } from "react"
 import { AppHeader } from "@/components/app-header"
+import { PageHeading } from "@/components/page-heading"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
@@ -51,9 +52,9 @@ export function LandingScreen(props: LandingScreenProps) {
 
       <main className="flex flex-1 flex-col justify-center gap-10">
         <div className="flex max-w-xl flex-col gap-4">
-          <h1 className="font-heading text-4xl leading-tight sm:text-5xl">
+          <PageHeading className="font-heading text-4xl leading-tight outline-none sm:text-5xl">
             Your env files, on every machine you use.
-          </h1>
+          </PageHeading>
           <p className="text-muted-foreground">
             Stop sending secrets to yourself in chat apps. ayawe keeps your env variables in one
             place, encrypted in your browser before they leave it.
@@ -76,7 +77,13 @@ export function LandingScreen(props: LandingScreenProps) {
             </Button>
           )}
           {props.providers.dev && (
-            <Button size="lg" variant="outline" onClick={handleDevSignIn} disabled={pending}>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={handleDevSignIn}
+              disabled={pending}
+              focusableWhenDisabled
+            >
               {pending ? (
                 <Spinner data-icon="inline-start" />
               ) : (
@@ -99,7 +106,9 @@ export function LandingScreen(props: LandingScreenProps) {
         <ol className="grid gap-6 border-t pt-8 sm:grid-cols-3">
           {STEPS.map((step, index) => (
             <li key={step.title} className="flex flex-col gap-1">
-              <span className="font-mono text-muted-foreground text-xs">0{index + 1}</span>
+              <span aria-hidden="true" className="font-mono text-muted-foreground text-xs">
+                0{index + 1}
+              </span>
               <span className="font-medium">{step.title}</span>
               <span className="text-muted-foreground text-sm">{step.text}</span>
             </li>

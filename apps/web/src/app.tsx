@@ -97,6 +97,7 @@ function Screens() {
     case "error":
       return (
         <main className="mx-auto flex min-h-svh max-w-md items-center p-4">
+          <title>ayawe cannot start</title>
           <Alert variant="destructive">
             <WarningIcon />
             <AlertTitle>ayawe cannot start</AlertTitle>

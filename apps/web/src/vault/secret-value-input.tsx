@@ -26,7 +26,7 @@ export function SecretValueInput(props: SecretValueInputProps) {
       <InputGroupAddon align="inline-end">
         <InputGroupButton
           size="icon-xs"
-          aria-label={visible ? "Hide value" : "Show value"}
+          aria-label="Show value"
           aria-pressed={visible}
           onClick={() => setVisible((current) => !current)}
         >

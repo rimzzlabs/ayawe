@@ -1,5 +1,6 @@
 import { type Keyring, unlockWithPassword } from "@ayawe/crypto/keyring"
 import { AuthLayout } from "@/auth/auth-layout"
+import { PageHeading } from "@/components/page-heading"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -39,11 +40,24 @@ export function UnlockScreen(props: UnlockScreenProps) {
     <AuthLayout me={props.me} onSignOut={props.onSignOut}>
       <Card>
         <CardHeader>
-          <CardTitle>Unlock your vault</CardTitle>
+          <CardTitle>
+            <PageHeading className="outline-none" focusOnMount={false}>
+              Unlock your vault
+            </PageHeading>
+          </CardTitle>
           <CardDescription>Enter your vault password to decrypt your secrets.</CardDescription>
         </CardHeader>
         <CardContent>
           <form id="unlock-form" onSubmit={form.onSubmit}>
+            {/* Lets password managers save the vault password under the GitHub login. */}
+            <input
+              type="text"
+              name="username"
+              autoComplete="username"
+              value={props.me.login}
+              readOnly
+              hidden
+            />
             <FieldGroup>
               <Field data-invalid={form.error ? true : undefined}>
                 <FieldLabel htmlFor="password">Vault password</FieldLabel>
@@ -54,14 +68,21 @@ export function UnlockScreen(props: UnlockScreenProps) {
                   autoComplete="current-password"
                   autoFocus
                   aria-invalid={form.error ? true : undefined}
+                  aria-describedby={form.error ? "unlock-error" : undefined}
                 />
-                <FieldError>{form.error}</FieldError>
+                <FieldError id="unlock-error">{form.error}</FieldError>
               </Field>
             </FieldGroup>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
-          <Button type="submit" form="unlock-form" className="w-full" disabled={form.pending}>
+          <Button
+            type="submit"
+            form="unlock-form"
+            className="w-full"
+            disabled={form.pending}
+            focusableWhenDisabled
+          >
             {form.pending && <Spinner data-icon="inline-start" />}
             Unlock
           </Button>

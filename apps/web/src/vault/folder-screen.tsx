@@ -1,4 +1,5 @@
 import { ArrowLeftIcon, PencilSimpleIcon } from "@phosphor-icons/react"
+import { PageHeading } from "@/components/page-heading"
 import { Button } from "@/components/ui/button"
 import { type FolderSummary, renameFolder } from "@/lib/api"
 import type { Entry } from "@/lib/dotenv"
@@ -30,7 +31,9 @@ export function FolderScreen(props: FolderScreenProps) {
         <Button variant="ghost" size="icon-sm" aria-label="Back to folders" onClick={props.onBack}>
           <ArrowLeftIcon />
         </Button>
-        <h1 className="min-w-0 flex-1 truncate font-heading text-2xl">{props.folder.name}</h1>
+        <PageHeading className="min-w-0 flex-1 truncate font-heading text-2xl outline-none">
+          {props.folder.name}
+        </PageHeading>
         <FolderNameDialog
           title="Rename folder"
           description="The name is visible to the server. Keep secrets out of it."
