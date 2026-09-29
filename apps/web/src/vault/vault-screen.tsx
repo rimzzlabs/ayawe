@@ -4,7 +4,7 @@ import { AppHeader } from "@/components/app-header"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { toast } from "@/components/ui/toast"
 import { UserMenu } from "@/components/user-menu"
-import { createFolder, type FolderSummary, fetchFolder } from "@/lib/api"
+import { createFolder, type FolderSummary, fetchFolder, renameFolder } from "@/lib/api"
 import type { Entry } from "@/lib/dotenv"
 import type { Session } from "@/lib/screen"
 import { openEntries } from "@/lib/secrets"
@@ -70,6 +70,13 @@ function VaultContent(props: VaultScreenProps) {
     setView((current) => (current.kind === "folder" ? { ...current, folder } : current))
   }
 
+  async function handleRename(folder: FolderSummary, name: string) {
+    const renamed = await renameFolder(folder.id, name)
+    if (!renamed.ok) return renamed.error.message
+    handleChanged(renamed.value)
+    return undefined
+  }
+
   function handleDeleted(id: string) {
     setFolders((current) => current.filter((item) => item.id !== id))
     setView({ kind: "list" })
@@ -96,6 +103,8 @@ function VaultContent(props: VaultScreenProps) {
             openingId={openingId}
             onOpen={handleOpen}
             onCreate={handleCreate}
+            onRename={handleRename}
+            onDeleted={handleDeleted}
           />
         ) : (
           <FolderScreen

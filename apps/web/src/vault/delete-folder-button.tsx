@@ -1,5 +1,5 @@
 import { TrashIcon } from "@phosphor-icons/react"
-import { useTransition } from "react"
+import { useState, useTransition } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,7 +9,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
@@ -22,6 +21,36 @@ interface DeleteFolderButtonProps {
 }
 
 export function DeleteFolderButton(props: DeleteFolderButtonProps) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label="Delete folder"
+        onClick={() => setOpen(true)}
+      >
+        <TrashIcon />
+      </Button>
+      <DeleteFolderDialog
+        folder={props.folder}
+        open={open}
+        onOpenChange={setOpen}
+        onDeleted={props.onDeleted}
+      />
+    </>
+  )
+}
+
+interface DeleteFolderDialogProps {
+  folder: FolderSummary
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onDeleted: (id: string) => void
+}
+
+export function DeleteFolderDialog(props: DeleteFolderDialogProps) {
   const [pending, startTransition] = useTransition()
 
   function handleDelete() {
@@ -32,17 +61,13 @@ export function DeleteFolderButton(props: DeleteFolderButtonProps) {
         return
       }
       toast.add({ title: `Deleted ${props.folder.name}`, type: "success" })
+      props.onOpenChange(false)
       props.onDeleted(props.folder.id)
     })
   }
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger
-        render={<Button variant="ghost" size="icon-sm" aria-label="Delete folder" />}
-      >
-        <TrashIcon />
-      </AlertDialogTrigger>
+    <AlertDialog open={props.open} onOpenChange={props.onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete {props.folder.name}?</AlertDialogTitle>

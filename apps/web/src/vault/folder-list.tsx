@@ -1,6 +1,20 @@
-import { CaretRightIcon, FolderIcon, FolderPlusIcon } from "@phosphor-icons/react"
+import {
+  CaretRightIcon,
+  FolderIcon,
+  FolderPlusIcon,
+  PencilSimpleIcon,
+  TrashIcon,
+} from "@phosphor-icons/react"
+import { useState } from "react"
 import { PageHeading } from "@/components/page-heading"
 import { Button } from "@/components/ui/button"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 import {
   Empty,
   EmptyContent,
@@ -19,6 +33,7 @@ import {
 } from "@/components/ui/item"
 import { Spinner } from "@/components/ui/spinner"
 import type { FolderSummary } from "@/lib/api"
+import { DeleteFolderDialog } from "@/vault/delete-folder-button"
 import { FolderNameDialog } from "@/vault/folder-name-dialog"
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" })
@@ -28,9 +43,18 @@ interface FolderListProps {
   openingId: string | null
   onOpen: (folder: FolderSummary) => void
   onCreate: (name: string) => Promise<string | undefined>
+  onRename: (folder: FolderSummary, name: string) => Promise<string | undefined>
+  onDeleted: (id: string) => void
 }
 
+type MenuAction = { kind: "rename" | "delete"; folder: FolderSummary } | null
+
 export function FolderList(props: FolderListProps) {
+  const [action, setAction] = useState<MenuAction>(null)
+
+  function closeAction(open: boolean) {
+    if (!open) setAction(null)
+  }
   const createDialog = (
     <FolderNameDialog
       title="New folder"
@@ -79,36 +103,77 @@ export function FolderList(props: FolderListProps) {
       <ul className="flex flex-col gap-2">
         {props.folders.map((folder) => (
           <li key={folder.id}>
-            <Item
-              variant="outline"
-              size="sm"
-              className="w-full text-left"
-              render={
-                <button
-                  type="button"
-                  aria-busy={props.openingId === folder.id || undefined}
-                  onClick={() => {
-                    if (props.openingId === null) props.onOpen(folder)
-                  }}
-                />
-              }
-            >
-              <ItemMedia variant="icon">
-                <FolderIcon />
-              </ItemMedia>
-              <ItemContent>
-                <ItemTitle>{folder.name}</ItemTitle>
-                <ItemDescription>
-                  Updated {dateFormat.format(new Date(folder.updatedAt))}
-                </ItemDescription>
-              </ItemContent>
-              <ItemActions>
-                {props.openingId === folder.id ? <Spinner /> : <CaretRightIcon />}
-              </ItemActions>
-            </Item>
+            {/* Right-click, Shift+F10, or the Menu key opens the folder actions. */}
+            <ContextMenu>
+              <ContextMenuTrigger>
+                <Item
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-left"
+                  render={
+                    <button
+                      type="button"
+                      aria-busy={props.openingId === folder.id || undefined}
+                      onClick={() => {
+                        if (props.openingId === null) props.onOpen(folder)
+                      }}
+                    />
+                  }
+                >
+                  <ItemMedia variant="icon">
+                    <FolderIcon />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle>{folder.name}</ItemTitle>
+                    <ItemDescription>
+                      Updated {dateFormat.format(new Date(folder.updatedAt))}
+                    </ItemDescription>
+                  </ItemContent>
+                  <ItemActions>
+                    {props.openingId === folder.id ? <Spinner /> : <CaretRightIcon />}
+                  </ItemActions>
+                </Item>
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuGroup>
+                  <ContextMenuItem onClick={() => setAction({ kind: "rename", folder })}>
+                    <PencilSimpleIcon />
+                    Rename
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    variant="destructive"
+                    onClick={() => setAction({ kind: "delete", folder })}
+                  >
+                    <TrashIcon />
+                    Delete
+                  </ContextMenuItem>
+                </ContextMenuGroup>
+              </ContextMenuContent>
+            </ContextMenu>
           </li>
         ))}
       </ul>
+
+      {action?.kind === "rename" && (
+        <FolderNameDialog
+          key={action.folder.id}
+          open
+          onOpenChange={closeAction}
+          title="Rename folder"
+          description="The name is visible to the server. Keep secrets out of it."
+          submitLabel="Rename"
+          defaultName={action.folder.name}
+          onSubmit={(name) => props.onRename(action.folder, name)}
+        />
+      )}
+      {action?.kind === "delete" && (
+        <DeleteFolderDialog
+          folder={action.folder}
+          open
+          onOpenChange={closeAction}
+          onDeleted={props.onDeleted}
+        />
+      )}
     </section>
   )
 }

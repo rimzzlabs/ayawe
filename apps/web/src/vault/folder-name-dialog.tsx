@@ -16,7 +16,10 @@ import { Spinner } from "@/components/ui/spinner"
 import { readField, useFormAction } from "@/lib/use-form-action"
 
 interface FolderNameDialogProps {
-  trigger: ReactElement
+  /** The button that opens the dialog. Leave it out and pass `open` to open it from code. */
+  trigger?: ReactElement
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
   title: string
   description: string
   submitLabel: string
@@ -26,7 +29,8 @@ interface FolderNameDialogProps {
 }
 
 export function FolderNameDialog(props: FolderNameDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = props.open ?? internalOpen
   const [name, setName] = useState(props.defaultName ?? "")
   const [confirmingDiscard, setConfirmingDiscard] = useState(false)
   const isDirty = name !== (props.defaultName ?? "")
@@ -39,6 +43,11 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
     if (!error) setOpen(false)
     return error
   })
+
+  function setOpen(nextOpen: boolean) {
+    setInternalOpen(nextOpen)
+    props.onOpenChange?.(nextOpen)
+  }
 
   function handleOpenChange(nextOpen: boolean) {
     if (nextOpen) {
@@ -63,7 +72,7 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
   // gets no backdrop of its own, so the parent dialog showed through around it.
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger render={props.trigger} />
+      {props.trigger && <DialogTrigger render={props.trigger} />}
       <DialogContent showCloseButton={false}>
         {confirmingDiscard ? (
           <div className="flex flex-col gap-6">
