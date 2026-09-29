@@ -3,6 +3,7 @@
   "name": "ayawe",
   "main": "src/index.ts",
   "compatibility_date": "2026-09-01",
+  "routes": [{ "pattern": "ayawe.rimzzlabs.com", "custom_domain": true }],
   "assets": {
     "directory": "../web/dist",
     "not_found_handling": "single-page-application",
@@ -12,8 +13,8 @@
     {
       "binding": "DB",
       "database_name": "ayawe",
-      // Run `pnpm exec wrangler d1 create ayawe` and paste the id here before deploy.
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      // Self-hosting? Run `pnpm exec wrangler d1 create ayawe` and put your own ID here.
+      "database_id": "2dc1e912-b0a0-4977-89bb-450d8b8e8c69",
       "migrations_dir": "migrations"
     }
   ]
