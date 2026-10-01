@@ -50,10 +50,20 @@ interface FolderListProps {
 type MenuAction = { kind: "rename" | "delete"; folder: FolderSummary } | null
 
 export function FolderList(props: FolderListProps) {
+  // The action stays set after its dialog closes, so the dialog can animate out.
+  // Each open gets a new session key, so the dialog starts with fresh state.
   const [action, setAction] = useState<MenuAction>(null)
+  const [actionOpen, setActionOpen] = useState(false)
+  const [actionSession, setActionSession] = useState(0)
+
+  function openAction(next: NonNullable<MenuAction>) {
+    setAction(next)
+    setActionOpen(true)
+    setActionSession((current) => current + 1)
+  }
 
   function closeAction(open: boolean) {
-    if (!open) setAction(null)
+    if (!open) setActionOpen(false)
   }
   const createDialog = (
     <FolderNameDialog
@@ -136,13 +146,13 @@ export function FolderList(props: FolderListProps) {
               </ContextMenuTrigger>
               <ContextMenuContent>
                 <ContextMenuGroup>
-                  <ContextMenuItem onClick={() => setAction({ kind: "rename", folder })}>
+                  <ContextMenuItem onClick={() => openAction({ kind: "rename", folder })}>
                     <PencilSimpleIcon />
                     Rename
                   </ContextMenuItem>
                   <ContextMenuItem
                     variant="destructive"
-                    onClick={() => setAction({ kind: "delete", folder })}
+                    onClick={() => openAction({ kind: "delete", folder })}
                   >
                     <TrashIcon />
                     Delete
@@ -156,8 +166,8 @@ export function FolderList(props: FolderListProps) {
 
       {action?.kind === "rename" && (
         <FolderNameDialog
-          key={action.folder.id}
-          open
+          key={actionSession}
+          open={actionOpen}
           onOpenChange={closeAction}
           title="Rename folder"
           description="The name is visible to the server. Keep secrets out of it."
@@ -168,8 +178,9 @@ export function FolderList(props: FolderListProps) {
       )}
       {action?.kind === "delete" && (
         <DeleteFolderDialog
+          key={actionSession}
           folder={action.folder}
-          open
+          open={actionOpen}
           onOpenChange={closeAction}
           onDeleted={props.onDeleted}
         />

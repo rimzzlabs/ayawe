@@ -44,7 +44,7 @@ function DrawerContent({
           <DrawerPrimitive.Popup
             data-slot="drawer-content"
             className={cn(
-              "-mb-12 max-h-[calc(85dvh+3rem)] w-full overflow-y-auto overscroll-contain rounded-none bg-popover px-6 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px)+3rem)] text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none [transform:translateY(var(--drawer-swipe-movement-y))] transition-transform duration-450 ease-[cubic-bezier(0.32,0.72,0,1)] data-swiping:select-none data-starting-style:[transform:translateY(calc(100%-3rem+2px))] data-ending-style:[transform:translateY(calc(100%-3rem+2px))] data-ending-style:duration-[calc(var(--drawer-swipe-strength)*400ms)]",
+              "-mb-12 flex max-h-[calc(85dvh+3rem)] w-full flex-col overflow-hidden rounded-none bg-popover px-5 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px)+3rem)] text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none [transform:translateY(var(--drawer-swipe-movement-y))] transition-transform duration-450 ease-[cubic-bezier(0.32,0.72,0,1)] data-swiping:select-none data-starting-style:[transform:translateY(calc(100%-3rem+2px))] data-ending-style:[transform:translateY(calc(100%-3rem+2px))] data-ending-style:duration-[calc(var(--drawer-swipe-strength)*400ms)]",
               className
             )}
             {...props}
@@ -53,7 +53,9 @@ function DrawerContent({
               aria-hidden
               className="mx-auto mb-5 h-1 w-12 shrink-0 bg-muted-foreground/30"
             />
-            <DrawerPrimitive.Content className="mx-auto grid w-full max-w-lg gap-6">
+            {/* The content scrolls, not the popup, so a part inside it can stay pinned.
+                The side padding keeps focus rings inside the scroll area. */}
+            <DrawerPrimitive.Content className="mx-auto flex min-h-0 w-full max-w-lg flex-1 flex-col gap-6 overflow-y-auto overscroll-contain px-1">
               {children}
             </DrawerPrimitive.Content>
           </DrawerPrimitive.Popup>

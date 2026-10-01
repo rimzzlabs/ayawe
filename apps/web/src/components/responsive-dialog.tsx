@@ -19,10 +19,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { useMediaQuery } from "@/hooks/use-media-query"
-
-// Tailwind `lg`. Tablets and phones are narrower, so they get a bottom drawer.
-const DESKTOP_QUERY = "(min-width: 64rem)"
+import { useDeferredOpen } from "@/hooks/use-deferred-open"
+import { useIsDesktop } from "@/hooks/use-is-desktop"
 
 type ResponsiveDialogRole = "dialog" | "alertdialog"
 
@@ -47,13 +45,15 @@ interface ResponsiveRootProps extends ResponsiveDialogProps {
 }
 
 function ResponsiveRoot(props: ResponsiveRootProps) {
-  const isDesktop = useMediaQuery(DESKTOP_QUERY)
+  // Tablets and phones get a bottom drawer.
+  const isDesktop = useIsDesktop()
   const Root = isDesktop ? Dialog : Drawer
+  const open = useDeferredOpen(props.open)
 
   return (
     <ResponsiveDialogContext value={{ isDesktop, role: props.role }}>
       <Root
-        open={props.open}
+        open={open}
         onOpenChange={props.onOpenChange}
         disablePointerDismissal={props.role === "alertdialog"}
       >
