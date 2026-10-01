@@ -3,16 +3,10 @@ import { LandingScreen } from "@/landing/landing-screen"
 import { loadMe } from "@/lib/session"
 
 export const Route = createFileRoute("/")({
-  loader: async () => {
-    const me = await loadMe()
-    // A route loader must throw. The root error component then shows the message.
-    if (!me.ok) throw me.error
-    return { signedIn: me.value !== null }
+  // Not awaited: the page renders at once, the same as its prerendered HTML. The answer only
+  // updates the `data-signed-in` flag, which picks "Sign in" or "Open vault" with CSS.
+  loader: () => {
+    void loadMe()
   },
-  component: LandingRoute,
+  component: LandingScreen,
 })
-
-function LandingRoute() {
-  const data = Route.useLoaderData()
-  return <LandingScreen signedIn={data.signedIn} />
-}

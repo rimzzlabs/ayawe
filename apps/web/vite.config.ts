@@ -3,10 +3,18 @@ import tailwindcss from "@tailwindcss/vite"
 import { tanstackRouter } from "@tanstack/router-plugin/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
+import { fontPreload } from "./vite-plugins/font-preload.ts"
+import { seo } from "./vite-plugins/seo.ts"
 
 export default defineConfig({
   // The router plugin must come before React. It builds `src/routeTree.gen.ts` from `src/routes`.
-  plugins: [tanstackRouter({ target: "react", autoCodeSplitting: true }), react(), tailwindcss()],
+  plugins: [
+    tanstackRouter({ target: "react", autoCodeSplitting: true }),
+    react(),
+    tailwindcss(),
+    seo(),
+    fontPreload(),
+  ],
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },

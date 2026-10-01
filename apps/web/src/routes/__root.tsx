@@ -1,5 +1,11 @@
 import { WarningIcon } from "@phosphor-icons/react"
-import { createRootRoute, type ErrorComponentProps, Link, Outlet } from "@tanstack/react-router"
+import {
+  createRootRoute,
+  type ErrorComponentProps,
+  HeadContent,
+  Link,
+  Outlet,
+} from "@tanstack/react-router"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
@@ -15,6 +21,8 @@ export const Route = createRootRoute({
 function RootLayout() {
   return (
     <Toaster>
+      {/* Adds the `head` tags of the matched routes. React moves them into <head>. */}
+      <HeadContent />
       <Outlet />
     </Toaster>
   )
@@ -35,6 +43,7 @@ function PageError(props: ErrorComponentProps) {
   return (
     <main className="mx-auto flex min-h-svh max-w-md items-center p-4">
       <title>Something went wrong · ayawe</title>
+      <meta name="robots" content="noindex" />
       <Alert variant="destructive">
         <WarningIcon />
         <AlertTitle>Something went wrong</AlertTitle>
@@ -48,6 +57,7 @@ function PageNotFound() {
   return (
     <main className="mx-auto flex min-h-svh max-w-md flex-col items-start justify-center gap-4 p-4">
       <title>Page not found · ayawe</title>
+      <meta name="robots" content="noindex" />
       <h1 className="font-heading text-2xl">Page not found</h1>
       <p className="text-muted-foreground text-sm">This page does not exist.</p>
       <Button nativeButton={false} render={<Link to="/" />}>
