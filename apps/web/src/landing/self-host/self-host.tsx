@@ -31,8 +31,8 @@ export function SelfHost() {
           Host it yourself
         </h2>
         <p className="max-w-xl text-muted-foreground">
-          Rather not trust someone else's server? Run your own copy on Cloudflare's free plan. It
-          takes about 10 minutes and needs Node, pnpm, and a Cloudflare account.
+          Run your own instance on Cloudflare's free plan. Setup takes about 10 minutes and needs
+          Node.js, pnpm, and a Cloudflare account.
         </p>
       </div>
 
@@ -49,7 +49,9 @@ export function SelfHost() {
           </CodeBlock>
           <p className="text-muted-foreground text-sm">
             Paste the <code className="font-mono text-foreground">database_id</code> it prints into{" "}
-            <code className="font-mono text-foreground">apps/api/wrangler.jsonc</code>.
+            <code className="font-mono text-foreground">apps/api/wrangler.jsonc</code>. In the same
+            file, delete the <code className="font-mono text-foreground">routes</code> entry, or
+            change it to your own domain.
           </p>
         </Step>
 
@@ -69,7 +71,7 @@ export function SelfHost() {
           <CodeBlock label="callback URL">{`${WORKER_URL}/api/auth/github/callback`}</CodeBlock>
         </Step>
 
-        <Step number={4} title="Add your secrets">
+        <Step number={4} title="Set the Worker secrets">
           <CodeBlock label="secret commands">
             {[
               "pnpm exec wrangler secret put APP_URL",
@@ -80,16 +82,25 @@ export function SelfHost() {
           </CodeBlock>
           <p className="text-muted-foreground text-sm">
             <code className="font-mono text-foreground">APP_URL</code> is your Worker URL. Set{" "}
-            <code className="font-mono text-foreground">ALLOWED_GITHUB_USERS</code> to your GitHub
-            username so nobody else can sign in.
+            <code className="font-mono text-foreground">ALLOWED_GITHUB_USERS</code> to the GitHub
+            usernames that may sign in, so nobody else can.
           </p>
         </Step>
 
         <Step number={5} title="Deploy">
           <CodeBlock label="deploy command">{"pnpm exec moon run api:deploy"}</CodeBlock>
           <p className="text-muted-foreground text-sm">
-            This builds the app, runs the database migrations, and ships the Worker. Run it again
-            whenever you pull updates.
+            This builds the app, applies the database migrations, and deploys the Worker. Run it
+            again after you pull updates. The{" "}
+            <a
+              href={`${REPO_URL}#host-your-own-copy`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-foreground underline underline-offset-4"
+            >
+              README
+            </a>{" "}
+            covers custom domains and deploys from GitHub Actions.
           </p>
         </Step>
       </ol>

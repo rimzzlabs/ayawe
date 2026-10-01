@@ -3,8 +3,10 @@
   "compilerOptions": {
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
+    // vite.config.ts imports its plugin with ".ts", as the native Vite config loader needs.
+    "allowImportingTsExtensions": true,
     "types": ["vite/client", "node"],
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "vite.config.ts", "vite-plugins"]
 }

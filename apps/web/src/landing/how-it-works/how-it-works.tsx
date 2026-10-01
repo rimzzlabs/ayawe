@@ -10,22 +10,23 @@ import {
 import { Marker } from "@/components/marker"
 import { Crossing, Node, StepDown, Zone } from "@/landing/how-it-works/diagram-parts"
 
+// Each step matches the marker with the same number in the diagram, from top to bottom.
 const STEPS = [
   {
     title: "Your password becomes a key",
-    text: "600,000 rounds of PBKDF2 turn your vault password into a key. The password itself never leaves the tab.",
+    text: "PBKDF2-SHA-256 runs 600,000 iterations in your browser to derive the key. The password is never sent anywhere.",
   },
   {
-    title: "Your browser locks the secrets",
-    text: "Each folder gets sealed with AES-256-GCM before it's sent anywhere.",
+    title: "Your browser encrypts the folder",
+    text: "Each folder is sealed with AES-256-GCM before it leaves the tab.",
   },
   {
-    title: "The server keeps gibberish",
-    text: "A Cloudflare Worker saves the ciphertext in D1. No key lives there, so nobody there can read it.",
+    title: "Only ciphertext crosses the network",
+    text: "The request carries the sealed folder over HTTPS. Without your key, nothing in it is readable.",
   },
   {
-    title: "Any device, same key",
-    text: "Type the same password on another machine and you get the same key back. Lost it? Use the recovery code.",
+    title: "The server stores what it cannot read",
+    text: "A Cloudflare Worker saves the ciphertext in D1. The key never reaches the server, so a database leak exposes no values.",
   },
 ]
 
@@ -37,35 +38,41 @@ export function HowItWorks() {
           How it works
         </h2>
         <p className="max-w-xl text-muted-foreground">
-          Plain text never leaves your device. Here's the whole trip.
+          Encryption and decryption happen in your browser. The server stores ciphertext and never
+          has a key for it.
         </p>
       </div>
 
       <figure className="flex flex-col gap-3">
         <div className="flex flex-col">
-          <Zone icon={DevicesIcon} title="Your device" note="Plain text lives here">
+          <Zone icon={DevicesIcon} title="Your browser" note="Plain text exists only here">
             <Node icon={PasswordIcon} label="Vault password" value="••••••••••" marker={1} />
             <StepDown>PBKDF2 ×600k</StepDown>
-            <Node icon={KeyIcon} label="Key, kept in this tab" marker={4} />
+            <Node icon={KeyIcon} label="Encryption key, in memory only" />
             <StepDown>AES-256-GCM</StepDown>
             <Node
               icon={FileTextIcon}
-              label="Your secrets"
-              value="API_KEY=sk_live_4eC39…"
+              label="Your .env values"
+              value="STRIPE_SECRET_KEY=sk_live_4eC39…"
               marker={2}
             />
           </Zone>
 
           <Crossing marker={3}>HTTPS, ciphertext only</Crossing>
 
-          <Zone icon={CloudIcon} title="Cloudflare" note="No key, can't decrypt" untrusted>
-            <Node icon={LockSimpleIcon} label="Worker receives" value="q8Zt0xLmP3…Rw4=" />
+          <Zone icon={CloudIcon} title="Cloudflare" note="Ciphertext only, no key" untrusted>
+            <Node
+              icon={LockSimpleIcon}
+              label="Worker receives"
+              value="q8Zt0xLmP3…Rw4="
+              marker={4}
+            />
             <StepDown>stores</StepDown>
             <Node icon={DatabaseIcon} label="D1 database" value="q8Zt0xLmP3…Rw4=" />
           </Zone>
         </div>
         <figcaption className="text-muted-foreground text-xs">
-          Folder names are the one thing the server can read. Keep secrets out of them.
+          Folder names are stored as plain text, so keep secrets out of them.
         </figcaption>
       </figure>
 
@@ -80,6 +87,11 @@ export function HowItWorks() {
           </li>
         ))}
       </ol>
+
+      <p className="max-w-xl text-muted-foreground text-sm">
+        On another machine, the same vault password derives the same key. If you forget the
+        password, the recovery code from setup unlocks the vault and lets you set a new one.
+      </p>
     </section>
   )
 }

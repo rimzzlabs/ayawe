@@ -9,6 +9,8 @@ interface SignInSearch {
 }
 
 export const Route = createFileRoute("/sign-in")({
+  // Private or a sign-in step. Keep it out of search results.
+  head: () => ({ meta: [{ name: "robots", content: "noindex" }] }),
   validateSearch: (search: Record<string, unknown>): SignInSearch => ({
     error: typeof search.error === "string" ? search.error : undefined,
   }),

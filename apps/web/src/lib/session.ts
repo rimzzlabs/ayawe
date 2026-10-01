@@ -30,6 +30,23 @@ const SIGNED_OUT: SessionState = {
   recoveryCode: null,
 }
 
+// Keep in sync with the inline script in index.html.
+const SIGNED_IN_HINT_KEY = "ayawe:signed-in"
+
+/**
+ * Lets index.html pick the signed-in or signed-out header before the app starts, so the
+ * landing page does not blink. Only a display hint: the server still checks every request.
+ */
+function syncSignedInHint(signedIn: boolean) {
+  document.documentElement.toggleAttribute("data-signed-in", signedIn)
+  try {
+    if (signedIn) localStorage.setItem(SIGNED_IN_HINT_KEY, "1")
+    else localStorage.removeItem(SIGNED_IN_HINT_KEY)
+  } catch {
+    // Private mode can block storage. The attribute above still covers this visit.
+  }
+}
+
 // Module state, not React state: route guards in `beforeLoad` read it before anything renders.
 let state = SIGNED_OUT
 let meLoadedAt = 0
@@ -43,6 +60,7 @@ export async function loadMe(): Promise<Result<Me | null>> {
   // A different user or a sign-out elsewhere: the old vault key must not stay in memory.
   if (me.value?.login !== state.me?.login && state.me !== undefined) state = { ...SIGNED_OUT }
   state = { ...state, me: me.value }
+  syncSignedInHint(me.value !== null)
   return me
 }
 
@@ -100,4 +118,5 @@ export function clearRecoveryCode() {
 
 export function clearSession() {
   state = { ...SIGNED_OUT, me: null }
+  syncSignedInHint(false)
 }

@@ -7,7 +7,7 @@ tags: ["frontend"]
 dependsOn: ["crypto"]
 
 fileGroups:
-  sources: ["src/**/*", "index.html", "vite.config.ts"]
+  sources: ["src/**/*", "vite-plugins/**/*", "index.html", "vite.config.ts"]
 
 tasks:
   dev:
@@ -24,5 +24,7 @@ tasks:
     inputs:
       - "@group(sources)"
       - "@group(configs)"
+      # The SEO tags, robots.txt, and sitemap.xml use it, so a new value must rebuild.
+      - "$SITE_URL"
     outputs:
       - "dist"

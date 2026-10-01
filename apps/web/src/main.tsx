@@ -30,11 +30,21 @@ declare module "@tanstack/react-router" {
   }
 }
 
-const root = document.getElementById("root")
-if (root) {
+async function start(root: HTMLElement) {
+  if (document.documentElement.dataset.appShell === undefined) {
+    // "/" has prerendered HTML. Load the route first, so React replaces it with the same page
+    // and no empty frame shows in between.
+    await router.load()
+  } else {
+    root.replaceChildren()
+    delete document.documentElement.dataset.appShell
+  }
   createRoot(root).render(
     <StrictMode>
       <RouterProvider router={router} />
     </StrictMode>,
   )
 }
+
+const root = document.getElementById("root")
+if (root) start(root)

@@ -26,7 +26,7 @@ function VaultLayout() {
 
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-10 p-4 sm:p-8">
-      <AppHeader>
+      <AppHeader homeTo="/vault">
         <UserMenu me={context.session.me}>
           <DropdownMenuItem onClick={() => navigate({ to: "/lock" })}>
             <LockIcon />
