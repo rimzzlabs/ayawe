@@ -8,7 +8,12 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!**/src/components/ui", "!**/worker-configuration.d.ts"]
+    "includes": [
+      "**",
+      "!**/src/components/ui",
+      "!**/worker-configuration.d.ts",
+      "!**/routeTree.gen.ts"
+    ]
   },
   "formatter": {
     "enabled": true,

@@ -32,10 +32,21 @@ async function readError(res: Response) {
   }
 }
 
+let handleUnauthorized = () => {}
+
+/** Runs when the server rejects the session cookie, for example after it expires. */
+export function onUnauthorized(handler: () => void) {
+  handleUnauthorized = handler
+}
+
 async function request(path: string, init?: RequestInit): Promise<Result<Response>> {
   try {
     const headers = init?.body ? { "Content-Type": "application/json" } : undefined
-    return ok(await fetch(`/api${path}`, { ...init, headers }))
+    const response = await fetch(`/api${path}`, { ...init, headers })
+    // `/me` answers 401 for every visitor who is not signed in, and a sign-out with an expired
+    // cookie must still finish on its own. Neither is an expired session in the middle of work.
+    if (response.status === 401 && !path.startsWith("/me")) handleUnauthorized()
+    return ok(response)
   } catch {
     return err(new Error("The server is not reachable"))
   }
@@ -101,14 +112,18 @@ export function createFolder(name: string) {
   return requestJson<FolderSummary>("/folders", jsonBody("POST", { name }))
 }
 
-export async function fetchFolder(id: string): Promise<Result<Folder>> {
-  const result = await requestJson<Folder>(`/folders/${id}`)
+/** Returns `null` when the folder does not exist. The id comes from the URL, so it is encoded. */
+export async function fetchFolder(id: string): Promise<Result<Folder | null>> {
+  const result = await request(`/folders/${encodeURIComponent(id)}`)
   if (!result.ok) return result
-  const secrets = result.value.secrets
-  if (secrets !== null && !isSealed(secrets)) {
+  if (result.value.status === 404) return ok(null)
+  if (!result.value.ok) return err(await readError(result.value))
+
+  const folder = (await result.value.json()) as Folder
+  if (folder.secrets !== null && !isSealed(folder.secrets)) {
     return err(new Error("The server returned damaged secrets"))
   }
-  return result
+  return ok(folder)
 }
 
 export function renameFolder(id: string, name: string) {

@@ -14,15 +14,13 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
 import type { Me } from "@/lib/api"
-import { openVault, type Screen } from "@/lib/screen"
 import { readField, useFormAction } from "@/lib/use-form-action"
 
 interface UnlockScreenProps {
   me: Me
   keyring: Keyring
-  onUnlocked: (screen: Screen) => void
+  onUnlocked: (dataKey: CryptoKey) => void
   onForgot: () => void
-  onSignOut: () => void
 }
 
 export function UnlockScreen(props: UnlockScreenProps) {
@@ -30,14 +28,12 @@ export function UnlockScreen(props: UnlockScreenProps) {
     const unlocked = await unlockWithPassword(props.keyring, readField(formData, "password"))
     if (!unlocked.ok) return "The vault password is wrong"
 
-    const vault = await openVault({ me: props.me, keyring: props.keyring, dataKey: unlocked.value })
-    if (!vault.ok) return vault.error.message
-    props.onUnlocked(vault.value)
+    props.onUnlocked(unlocked.value)
     return undefined
   })
 
   return (
-    <AuthLayout me={props.me} onSignOut={props.onSignOut}>
+    <AuthLayout me={props.me}>
       <Card>
         <CardHeader>
           <CardTitle>

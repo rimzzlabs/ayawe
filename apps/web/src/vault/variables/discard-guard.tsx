@@ -1,3 +1,4 @@
+import { useBlocker } from "@tanstack/react-router"
 import { useState } from "react"
 import {
   ResponsiveSheetBody,
@@ -15,29 +16,59 @@ interface DiscardGuardParams {
   onClose: () => void
 }
 
-/** Asks before a sheet with unsaved changes closes. */
+// Stable, so the blocker does not register again on every render. `disabled` does the switching.
+function blockNavigation() {
+  return true
+}
+
+/**
+ * Asks before unsaved changes are lost: when the sheet closes, when the app navigates away
+ * (Back button, Lock, Sign out), and when the tab closes.
+ */
 export function useDiscardGuard(params: DiscardGuardParams) {
   const [confirming, setConfirming] = useState(false)
+  const hasChanges = params.isDirty && !params.isPending
+  const blocker = useBlocker({
+    shouldBlockFn: blockNavigation,
+    disabled: !hasChanges,
+    enableBeforeUnload: hasChanges,
+    withResolver: true,
+  })
+  const navigationBlocked = blocker.status === "blocked"
 
   function handleOpenChange(open: boolean) {
     if (open) return
     // Esc or a swipe on the confirmation means "keep editing", not "close everything".
-    if (confirming) {
-      setConfirming(false)
+    if (confirming || navigationBlocked) {
+      keepEditing()
       return
     }
-    if (params.isDirty && !params.isPending) {
+    if (hasChanges) {
       setConfirming(true)
       return
     }
     params.onClose()
   }
 
+  function keepEditing() {
+    setConfirming(false)
+    blocker.reset?.()
+  }
+
+  function discard() {
+    // A blocked navigation continues and unmounts the sheet. A plain close only closes it.
+    if (navigationBlocked) {
+      blocker.proceed?.()
+      return
+    }
+    params.onClose()
+  }
+
   return {
-    confirming,
+    confirming: confirming || navigationBlocked,
     handleOpenChange,
-    keepEditing: () => setConfirming(false),
-    discard: params.onClose,
+    keepEditing,
+    discard,
   }
 }
 

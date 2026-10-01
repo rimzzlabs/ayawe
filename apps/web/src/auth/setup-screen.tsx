@@ -1,4 +1,4 @@
-import { createKeyring } from "@ayawe/crypto/keyring"
+import { createKeyring, type Keyring } from "@ayawe/crypto/keyring"
 import { AuthLayout } from "@/auth/auth-layout"
 import { PageHeading } from "@/components/page-heading"
 import { PasswordInput } from "@/components/password-input"
@@ -14,15 +14,13 @@ import {
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
 import { type Me, saveKeyring } from "@/lib/api"
-import type { Session } from "@/lib/screen"
 import { readField, useFormAction } from "@/lib/use-form-action"
 
 export const MIN_PASSWORD_LENGTH = 10
 
 interface SetupScreenProps {
   me: Me
-  onCreated: (session: Session, recoveryCode: string) => void
-  onSignOut: () => void
+  onCreated: (params: { keyring: Keyring; dataKey: CryptoKey; recoveryCode: string }) => void
 }
 
 export function SetupScreen(props: SetupScreenProps) {
@@ -37,16 +35,16 @@ export function SetupScreen(props: SetupScreenProps) {
     const saved = await saveKeyring(created.keyring)
     if (!saved.ok) return saved.error.message
 
-    const me = { ...props.me, hasKeyring: true }
-    props.onCreated(
-      { me, keyring: created.keyring, dataKey: created.dataKey },
-      created.recoveryCode,
-    )
+    props.onCreated({
+      keyring: created.keyring,
+      dataKey: created.dataKey,
+      recoveryCode: created.recoveryCode,
+    })
     return undefined
   })
 
   return (
-    <AuthLayout me={props.me} onSignOut={props.onSignOut}>
+    <AuthLayout me={props.me}>
       <Card>
         <CardHeader>
           <CardTitle>

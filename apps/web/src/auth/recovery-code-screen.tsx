@@ -19,7 +19,6 @@ interface RecoveryCodeScreenProps {
   me: Me
   recoveryCode: string
   onContinue: () => void
-  onSignOut: () => void
 }
 
 export function RecoveryCodeScreen(props: RecoveryCodeScreenProps) {
@@ -33,7 +32,7 @@ export function RecoveryCodeScreen(props: RecoveryCodeScreenProps) {
   }
 
   return (
-    <AuthLayout me={props.me} onSignOut={props.onSignOut}>
+    <AuthLayout me={props.me}>
       <Card>
         <CardHeader>
           <CardTitle>

@@ -24,7 +24,7 @@ function callbackUrl(c: AppContext) {
 }
 
 function redirectWithError(c: AppContext, message: string) {
-  return c.redirect(`${c.env.APP_URL}/?error=${encodeURIComponent(message)}`)
+  return c.redirect(`${c.env.APP_URL}/sign-in?error=${encodeURIComponent(message)}`)
 }
 
 function isAllowed(c: AppContext, login: string) {
@@ -98,7 +98,7 @@ githubRoutes.get("/callback", async (c) => {
       avatarUrl: profile.avatar_url,
     })
     await createSession(c, userId)
-    return c.redirect(`${c.env.APP_URL}/`)
+    return c.redirect(`${c.env.APP_URL}/vault`)
   } catch (error) {
     console.error(error)
     return redirectWithError(c, "The sign-in with GitHub failed. Try again")

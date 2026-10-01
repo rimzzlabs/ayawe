@@ -1,21 +1,16 @@
 import {
+  ArrowRightIcon,
   ClipboardTextIcon,
   GithubLogoIcon,
   PasswordIcon,
-  TerminalIcon,
-  WarningIcon,
 } from "@phosphor-icons/react"
-import { useState, useTransition } from "react"
+import { Link } from "@tanstack/react-router"
 import { AppHeader } from "@/components/app-header"
 import { PageHeading } from "@/components/page-heading"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
 import { GithubCard } from "@/landing/github-card/github-card"
 import { HowItWorks } from "@/landing/how-it-works/how-it-works"
 import { SelfHost } from "@/landing/self-host/self-host"
-import { devSignIn, fetchMe, type Providers } from "@/lib/api"
-import { type Screen, screenForUser } from "@/lib/screen"
 
 const STEPS = [
   {
@@ -36,31 +31,20 @@ const STEPS = [
 ]
 
 interface LandingScreenProps {
-  providers: Providers
-  error?: string
-  onSignedIn: (screen: Screen) => void
+  /** A signed-in visitor gets "Open vault" instead of the sign-in links. */
+  signedIn: boolean
 }
 
 export function LandingScreen(props: LandingScreenProps) {
-  const [error, setError] = useState(props.error)
-  const [pending, startTransition] = useTransition()
-  const hasProvider = props.providers.github || props.providers.dev
-
-  function handleDevSignIn() {
-    startTransition(async () => {
-      const signedIn = await devSignIn()
-      const me = signedIn.ok ? await fetchMe() : signedIn
-      if (!me.ok || !me.value) {
-        setError(me.ok ? "The dev sign-in failed" : me.error.message)
-        return
-      }
-      props.onSignedIn(await screenForUser(me.value))
-    })
-  }
-
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-12 p-4 sm:p-8">
-      <AppHeader />
+      <AppHeader>
+        {!props.signedIn && (
+          <Button variant="ghost" size="sm" nativeButton={false} render={<Link to="/sign-in" />}>
+            Sign in
+          </Button>
+        )}
+      </AppHeader>
 
       <main className="flex flex-1 flex-col justify-center gap-10">
         <div className="flex max-w-xl flex-col gap-4">
@@ -74,45 +58,17 @@ export function LandingScreen(props: LandingScreenProps) {
           </p>
         </div>
 
-        {error && (
-          <Alert variant="destructive">
-            <WarningIcon />
-            <AlertTitle>Couldn't sign you in</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
         <div className="flex flex-wrap gap-2">
-          {props.providers.github && (
-            <Button size="lg" nativeButton={false} render={<a href="/api/auth/github" />}>
-              <GithubLogoIcon data-icon="inline-start" />
-              Continue with GitHub
+          {props.signedIn ? (
+            <Button size="lg" nativeButton={false} render={<Link to="/vault" />}>
+              Open vault
+              <ArrowRightIcon data-icon="inline-end" />
             </Button>
-          )}
-          {props.providers.dev && (
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={handleDevSignIn}
-              disabled={pending}
-              focusableWhenDisabled
-            >
-              {pending ? (
-                <Spinner data-icon="inline-start" />
-              ) : (
-                <TerminalIcon data-icon="inline-start" />
-              )}
-              Continue as dev user
+          ) : (
+            <Button size="lg" nativeButton={false} render={<Link to="/sign-in" />}>
+              Get started
+              <ArrowRightIcon data-icon="inline-end" />
             </Button>
-          )}
-          {!hasProvider && (
-            <Alert>
-              <WarningIcon />
-              <AlertTitle>No sign-in method is set up</AlertTitle>
-              <AlertDescription>
-                Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET on the server.
-              </AlertDescription>
-            </Alert>
           )}
         </div>
 

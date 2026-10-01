@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
 import { ENV_KEY_PATTERN, type Entry, isDotenvPaste, mergeEntries, parseDotenv } from "@/lib/dotenv"
-import { useUnsavedChanges } from "@/lib/unsaved-changes"
 import { SecretValueTextarea } from "@/vault/secret-value-textarea"
 import { DiscardConfirmation, useDiscardGuard } from "@/vault/variables/discard-guard"
 
@@ -47,7 +46,6 @@ export function AddVariablesSheet(props: AddVariablesSheetProps) {
   const entries = useFieldArray({ control: form.control, name: "entries" })
   const watchedEntries = useWatch({ control: form.control, name: "entries" })
   const { isDirty, isSubmitting } = form.formState
-  useUnsavedChanges(isDirty)
 
   const guard = useDiscardGuard({
     isDirty,
