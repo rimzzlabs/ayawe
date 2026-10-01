@@ -1,15 +1,15 @@
 import { type ReactElement, useState } from "react"
-import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+  ResponsiveDialog,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+} from "@/components/responsive-dialog"
+import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
@@ -71,18 +71,18 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
   // The confirmation replaces the form inside the same dialog. A second, stacked dialog
   // gets no backdrop of its own, so the parent dialog showed through around it.
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      {props.trigger && <DialogTrigger render={props.trigger} />}
-      <DialogContent showCloseButton={false}>
+    <ResponsiveDialog open={open} onOpenChange={handleOpenChange}>
+      {props.trigger && <ResponsiveDialogTrigger render={props.trigger} />}
+      <ResponsiveDialogContent>
         {confirmingDiscard ? (
           <div className="flex flex-col gap-6">
-            <DialogHeader>
-              <DialogTitle>Discard unsaved changes?</DialogTitle>
-              <DialogDescription id="discard-description">
+            <ResponsiveDialogHeader>
+              <ResponsiveDialogTitle>Discard unsaved changes?</ResponsiveDialogTitle>
+              <ResponsiveDialogDescription id="discard-description">
                 You typed a name that isn't saved yet. If you leave now, it's gone.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
+              </ResponsiveDialogDescription>
+            </ResponsiveDialogHeader>
+            <ResponsiveDialogFooter>
               <Button
                 type="button"
                 variant="outline"
@@ -95,14 +95,14 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
               <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
                 Discard
               </Button>
-            </DialogFooter>
+            </ResponsiveDialogFooter>
           </div>
         ) : (
           <form className="flex flex-col gap-6" onSubmit={form.onSubmit}>
-            <DialogHeader>
-              <DialogTitle>{props.title}</DialogTitle>
-              <DialogDescription>{props.description}</DialogDescription>
-            </DialogHeader>
+            <ResponsiveDialogHeader>
+              <ResponsiveDialogTitle>{props.title}</ResponsiveDialogTitle>
+              <ResponsiveDialogDescription>{props.description}</ResponsiveDialogDescription>
+            </ResponsiveDialogHeader>
             <FieldGroup>
               <Field data-invalid={form.error ? true : undefined}>
                 <FieldLabel htmlFor="folder-name">Name</FieldLabel>
@@ -121,16 +121,18 @@ export function FolderNameDialog(props: FolderNameDialogProps) {
                 <FieldError id="folder-name-error">{form.error}</FieldError>
               </Field>
             </FieldGroup>
-            <DialogFooter>
-              <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
+            <ResponsiveDialogFooter>
+              <ResponsiveDialogClose render={<Button type="button" variant="outline" />}>
+                Cancel
+              </ResponsiveDialogClose>
               <Button type="submit" disabled={form.pending} focusableWhenDisabled>
                 {form.pending && <Spinner data-icon="inline-start" />}
                 {props.submitLabel}
               </Button>
-            </DialogFooter>
+            </ResponsiveDialogFooter>
           </form>
         )}
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   )
 }
