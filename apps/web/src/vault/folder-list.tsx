@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/item"
 import { Spinner } from "@/components/ui/spinner"
 import type { FolderSummary } from "@/lib/api"
-import { DeleteFolderDialog } from "@/vault/delete-folder-button"
+import { DeleteFolderDialog } from "@/vault/delete-folder-dialog"
 import { FolderNameDialog } from "@/vault/folder-name-dialog"
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" })
