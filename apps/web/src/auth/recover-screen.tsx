@@ -2,6 +2,7 @@ import { changePassword, type Keyring, unlockWithRecoveryCode } from "@ayawe/cry
 import { AuthLayout } from "@/auth/auth-layout"
 import { MIN_PASSWORD_LENGTH } from "@/auth/setup-screen"
 import { PageHeading } from "@/components/page-heading"
+import { PasswordInput } from "@/components/password-input"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -86,10 +87,9 @@ export function RecoverScreen(props: RecoverScreenProps) {
               </Field>
               <Field data-invalid={form.error ? true : undefined}>
                 <FieldLabel htmlFor="password">New vault password</FieldLabel>
-                <Input
+                <PasswordInput
                   id="password"
                   name="password"
-                  type="password"
                   autoComplete="new-password"
                   aria-invalid={form.error ? true : undefined}
                   aria-describedby={form.error ? "recover-error" : undefined}

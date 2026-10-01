@@ -1,6 +1,7 @@
 import { type Keyring, unlockWithPassword } from "@ayawe/crypto/keyring"
 import { AuthLayout } from "@/auth/auth-layout"
 import { PageHeading } from "@/components/page-heading"
+import { PasswordInput } from "@/components/password-input"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -11,7 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import type { Me } from "@/lib/api"
 import { openVault, type Screen } from "@/lib/screen"
@@ -61,10 +61,9 @@ export function UnlockScreen(props: UnlockScreenProps) {
             <FieldGroup>
               <Field data-invalid={form.error ? true : undefined}>
                 <FieldLabel htmlFor="password">Vault password</FieldLabel>
-                <Input
+                <PasswordInput
                   id="password"
                   name="password"
-                  type="password"
                   autoComplete="current-password"
                   autoFocus
                   aria-invalid={form.error ? true : undefined}

@@ -1,6 +1,7 @@
 import { createKeyring } from "@ayawe/crypto/keyring"
 import { AuthLayout } from "@/auth/auth-layout"
 import { PageHeading } from "@/components/page-heading"
+import { PasswordInput } from "@/components/password-input"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -11,7 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { type Me, saveKeyring } from "@/lib/api"
 import type { Session } from "@/lib/screen"
@@ -73,11 +73,10 @@ export function SetupScreen(props: SetupScreenProps) {
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="password">Vault password</FieldLabel>
-                <Input
+                <PasswordInput
                   id="password"
                   aria-describedby="setup-password-hint"
                   name="password"
-                  type="password"
                   autoComplete="new-password"
                   autoFocus
                 />
@@ -87,10 +86,9 @@ export function SetupScreen(props: SetupScreenProps) {
               </Field>
               <Field data-invalid={form.error ? true : undefined}>
                 <FieldLabel htmlFor="confirm">Type it again</FieldLabel>
-                <Input
+                <PasswordInput
                   id="confirm"
                   name="confirm"
-                  type="password"
                   autoComplete="new-password"
                   aria-invalid={form.error ? true : undefined}
                   aria-describedby={form.error ? "setup-error" : undefined}
