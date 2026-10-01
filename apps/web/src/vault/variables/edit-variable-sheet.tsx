@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { ENV_KEY_PATTERN, type Entry } from "@/lib/dotenv"
 import { useUnsavedChanges } from "@/lib/unsaved-changes"
-import { SecretValueInput } from "@/vault/secret-value-input"
+import { SecretValueTextarea } from "@/vault/secret-value-textarea"
 import { DiscardConfirmation, useDiscardGuard } from "@/vault/variables/discard-guard"
 
 interface EditVariableSheetProps {
@@ -105,7 +105,11 @@ export function EditVariableSheet(props: EditVariableSheetProps) {
                   render={({ field }) => (
                     <Field>
                       <FieldLabel htmlFor="edit-variable-value">Value</FieldLabel>
-                      <SecretValueInput {...field} id="edit-variable-value" placeholder="value" />
+                      <SecretValueTextarea
+                        {...field}
+                        id="edit-variable-value"
+                        placeholder="value"
+                      />
                     </Field>
                   )}
                 />

@@ -148,3 +148,20 @@
   }
 }
 /* biome-ignore-end lint/complexity/noImportantStyles: reduced motion must win over component styles */
+
+/* Masks the text of a textarea, which has no password type.
+   Without -webkit-text-security (older Firefox), the text gets a heavy blur instead. */
+@utility text-masked {
+  -webkit-text-security: disc;
+
+  @supports not (-webkit-text-security: disc) {
+    color: transparent;
+    text-shadow: 0 0 0.6em var(--color-foreground);
+    caret-color: var(--color-foreground);
+  }
+
+  &::placeholder {
+    -webkit-text-security: none;
+    text-shadow: none;
+  }
+}

@@ -19,7 +19,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
 import { ENV_KEY_PATTERN, type Entry, isDotenvPaste, mergeEntries, parseDotenv } from "@/lib/dotenv"
 import { useUnsavedChanges } from "@/lib/unsaved-changes"
-import { SecretValueInput } from "@/vault/secret-value-input"
+import { SecretValueTextarea } from "@/vault/secret-value-textarea"
 import { DiscardConfirmation, useDiscardGuard } from "@/vault/variables/discard-guard"
 
 interface AddVariablesFormValues {
@@ -117,28 +117,10 @@ export function AddVariablesSheet(props: AddVariablesSheetProps) {
             </ResponsiveSheetHeader>
 
             <ResponsiveSheetBody className="flex flex-col gap-4">
-              <div
-                className="hidden gap-2 text-muted-foreground text-xs uppercase tracking-wider lg:flex"
-                aria-hidden="true"
-              >
-                <span className="w-2/5">Key</span>
-                <span className="flex-1">Value</span>
-                <span className="w-9" />
-              </div>
-
               <ul className="flex flex-col gap-3">
                 {entries.fields.map((row, index) => (
-                  // A labelled card on phones and tablets. A single compact line on desktop.
-                  <li
-                    key={row.id}
-                    className="relative flex flex-col gap-4 border bg-card p-4 lg:flex-row lg:items-start lg:gap-2 lg:border-0 lg:bg-transparent lg:p-0"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="pr-10 font-semibold text-muted-foreground text-xs uppercase tracking-wider lg:hidden"
-                    >
-                      Variable {index + 1}
-                    </span>
+                  // One column on every screen: the key, then the value under it.
+                  <li key={row.id} className="relative flex flex-col gap-4 border bg-card p-4">
                     <Controller
                       control={form.control}
                       name={`entries.${index}.key`}
@@ -154,8 +136,8 @@ export function AddVariablesSheet(props: AddVariablesSheetProps) {
                         },
                       }}
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid || undefined} className="lg:w-2/5">
-                          <FieldLabel htmlFor={`${row.id}-key`} className="lg:sr-only">
+                        <Field data-invalid={fieldState.invalid || undefined}>
+                          <FieldLabel htmlFor={`${row.id}-key`}>
                             Key<span className="sr-only"> {index + 1}</span>
                           </FieldLabel>
                           <Input
@@ -178,28 +160,31 @@ export function AddVariablesSheet(props: AddVariablesSheetProps) {
                       control={form.control}
                       name={`entries.${index}.value`}
                       render={({ field }) => (
-                        <Field className="lg:flex-1">
-                          <FieldLabel htmlFor={`${row.id}-value`} className="lg:sr-only">
+                        <Field>
+                          <FieldLabel htmlFor={`${row.id}-value`}>
                             Value<span className="sr-only"> {index + 1}</span>
                           </FieldLabel>
-                          <SecretValueInput {...field} id={`${row.id}-value`} placeholder="value" />
+                          <SecretValueTextarea
+                            {...field}
+                            id={`${row.id}-value`}
+                            placeholder="value"
+                          />
                         </Field>
                       )}
                     />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      className="absolute top-2 right-2 lg:static"
-                      aria-label={`Remove ${watchedEntries[index]?.key.trim() || `row ${index + 1}`}`}
-                      onClick={() =>
-                        entries.fields.length === 1
-                          ? entries.replace([BLANK_ENTRY])
-                          : entries.remove(index)
-                      }
-                    >
-                      <TrashIcon />
-                    </Button>
+                    {/* A single row has nothing to remove from. */}
+                    {entries.fields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        className="absolute top-2 right-2"
+                        aria-label={`Remove ${watchedEntries[index]?.key.trim() || `row ${index + 1}`}`}
+                        onClick={() => entries.remove(index)}
+                      >
+                        <TrashIcon />
+                      </Button>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -208,7 +193,7 @@ export function AddVariablesSheet(props: AddVariablesSheetProps) {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="w-full border-dashed lg:w-auto lg:self-start"
+                className="w-full border-dashed"
                 onClick={() => entries.append(BLANK_ENTRY)}
               >
                 <PlusIcon data-icon="inline-start" />
