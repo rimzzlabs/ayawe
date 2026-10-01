@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.0](https://github.com/rimzzlabs/ayawe/compare/v0.1.0...v0.2.0) (2026-10-01)
+
+
+### Features
+
+* **web:** add show/hide toggle to every password input ([#4](https://github.com/rimzzlabs/ayawe/issues/4)) ([7a91685](https://github.com/rimzzlabs/ayawe/commit/7a91685a35e427774ad16e87ece40053ec6028e3))
+* **web:** redesign the variable list with a table on desktop and cards on mobile ([#7](https://github.com/rimzzlabs/ayawe/issues/7)) ([f5379dd](https://github.com/rimzzlabs/ayawe/commit/f5379dddd2871c14d363b0759d7a096b7c8e3629))
+* **web:** show dialogs as a bottom drawer on tablets and phones ([#6](https://github.com/rimzzlabs/ayawe/issues/6)) ([4382ba4](https://github.com/rimzzlabs/ayawe/commit/4382ba42ea9431c72106c13022ff4d1c01b4b195))
+* **web:** support multi-line values in a one-column variable form ([#9](https://github.com/rimzzlabs/ayawe/issues/9)) ([3a54a97](https://github.com/rimzzlabs/ayawe/commit/3a54a97206563f1b2aa12962b7ba7f7da04e03f1))
+
+
+### Bug Fixes
+
+* **web:** keep focus in fields while a screen re-renders ([#11](https://github.com/rimzzlabs/ayawe/issues/11)) ([45441ba](https://github.com/rimzzlabs/ayawe/commit/45441baff653e6251bbd9b0a4e802efadaadc7b2))
+* **web:** tidy the folder header on phones ([#8](https://github.com/rimzzlabs/ayawe/issues/8)) ([411b15c](https://github.com/rimzzlabs/ayawe/commit/411b15c73e5b4471150a4c4bbe4ed8a28e350ca5))
+
 ## 0.1.0 (2026-09-29)
 
 
