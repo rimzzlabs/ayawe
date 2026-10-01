@@ -1,5 +1,4 @@
-import { TrashIcon } from "@phosphor-icons/react"
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
 import {
   ResponsiveAlertDialog,
   ResponsiveDialogClose,
@@ -13,34 +12,6 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
 import { deleteFolder, type FolderSummary } from "@/lib/api"
-
-interface DeleteFolderButtonProps {
-  folder: FolderSummary
-  onDeleted: (id: string) => void
-}
-
-export function DeleteFolderButton(props: DeleteFolderButtonProps) {
-  const [open, setOpen] = useState(false)
-
-  return (
-    <>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        aria-label="Delete folder"
-        onClick={() => setOpen(true)}
-      >
-        <TrashIcon />
-      </Button>
-      <DeleteFolderDialog
-        folder={props.folder}
-        open={open}
-        onOpenChange={setOpen}
-        onDeleted={props.onDeleted}
-      />
-    </>
-  )
-}
 
 interface DeleteFolderDialogProps {
   folder: FolderSummary

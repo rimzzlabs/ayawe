@@ -1,15 +1,25 @@
 import {
   ArrowLeftIcon,
   CopyIcon,
+  DotsThreeIcon,
   KeyIcon,
-  LockSimpleIcon,
   MagnifyingGlassIcon,
   PencilSimpleIcon,
   PlusIcon,
+  TrashIcon,
 } from "@phosphor-icons/react"
 import { useState } from "react"
 import { PageHeading } from "@/components/page-heading"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Empty,
   EmptyContent,
@@ -26,7 +36,7 @@ import { copyText } from "@/lib/clipboard"
 import { type Entry, serializeDotenv } from "@/lib/dotenv"
 import type { Session } from "@/lib/screen"
 import { sealEntries } from "@/lib/secrets"
-import { DeleteFolderButton } from "@/vault/delete-folder-button"
+import { DeleteFolderDialog } from "@/vault/delete-folder-dialog"
 import { FolderNameDialog } from "@/vault/folder-name-dialog"
 import { AddVariablesSheet } from "@/vault/variables/add-variables-sheet"
 import { DeleteVariableDialog } from "@/vault/variables/delete-variable-dialog"
@@ -36,7 +46,12 @@ import { VariableTable } from "@/vault/variables/variable-table"
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" })
 
-type Panel = { kind: "add" } | { kind: "edit"; entry: Entry } | { kind: "delete"; entry: Entry }
+type Panel =
+  | { kind: "rename-folder" }
+  | { kind: "delete-folder" }
+  | { kind: "add" }
+  | { kind: "edit"; entry: Entry }
+  | { kind: "delete"; entry: Entry }
 
 interface FolderScreenProps {
   session: Session
@@ -100,6 +115,7 @@ export function FolderScreen(props: FolderScreenProps) {
   const visibleEntries =
     search === "" ? entries : entries.filter((entry) => entry.key.toLowerCase().includes(search))
   const keys = entries.map((entry) => entry.key)
+  const updatedLabel = dateFormat.format(new Date(props.folder.updatedAt))
   const openAdd = () => openPanel({ kind: "add" })
   const openEdit = (entry: Entry) => openPanel({ kind: "edit", entry })
   const openDelete = (entry: Entry) => openPanel({ kind: "delete", entry })
@@ -119,29 +135,77 @@ export function FolderScreen(props: FolderScreenProps) {
           <PageHeading className="min-w-0 flex-1 truncate font-heading text-2xl outline-none">
             {props.folder.name}
           </PageHeading>
-          <FolderNameDialog
-            title="Rename folder"
-            description="The name is visible to the server. Keep secrets out of it."
-            submitLabel="Rename"
-            defaultName={props.folder.name}
-            onSubmit={handleRename}
-            trigger={
-              <Button variant="ghost" size="icon-sm" aria-label="Rename folder">
-                <PencilSimpleIcon />
-              </Button>
-            }
-          />
-          <DeleteFolderButton folder={props.folder} onDeleted={props.onDeleted} />
+          {/* Phones get one menu, so the actions stay close to the title. */}
+          <div className="hidden items-center gap-1 sm:flex">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Rename folder"
+              onClick={() => openPanel({ kind: "rename-folder" })}
+            >
+              <PencilSimpleIcon />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Delete folder"
+              onClick={() => openPanel({ kind: "delete-folder" })}
+            >
+              <TrashIcon />
+            </Button>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="sm:hidden"
+                  aria-label="Folder actions"
+                />
+              }
+            >
+              <DotsThreeIcon weight="bold" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-auto min-w-40">
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => openPanel({ kind: "rename-folder" })}>
+                  <PencilSimpleIcon />
+                  Rename
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => openPanel({ kind: "delete-folder" })}
+                >
+                  <TrashIcon />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 pl-11 text-muted-foreground text-xs">
+        {/* Phones get a two-cell strip. Wider screens get one line of text. */}
+        <dl className="mt-3 grid grid-cols-2 divide-x border sm:hidden">
+          <div className="flex min-w-0 flex-col gap-1 px-3 py-2.5">
+            <dt>
+              <Badge variant="secondary">Variables</Badge>
+            </dt>
+            <dd className="font-medium text-sm">{entries.length}</dd>
+          </div>
+          <div className="flex min-w-0 flex-col gap-1 px-3 py-2.5">
+            <dt>
+              <Badge variant="secondary">Updated</Badge>
+            </dt>
+            <dd className="truncate font-medium text-sm">{updatedLabel}</dd>
+          </div>
+        </dl>
+        <p className="hidden items-center gap-2 pl-11 text-muted-foreground text-xs sm:flex">
           <span>{countLabel(entries.length)}</span>
           <span aria-hidden="true">·</span>
-          <span>Updated {dateFormat.format(new Date(props.folder.updatedAt))}</span>
-          <span aria-hidden="true">·</span>
-          <span className="inline-flex items-center gap-1">
-            <LockSimpleIcon aria-hidden="true" />
-            End-to-end encrypted
-          </span>
+          <span>Updated {updatedLabel}</span>
         </p>
       </header>
 
@@ -226,6 +290,27 @@ export function FolderScreen(props: FolderScreenProps) {
         </Button>
       )}
 
+      {panel?.kind === "rename-folder" && (
+        <FolderNameDialog
+          key={panelSession}
+          open={panelOpen}
+          onOpenChange={setPanelOpen}
+          title="Rename folder"
+          description="The name is visible to the server. Keep secrets out of it."
+          submitLabel="Rename"
+          defaultName={props.folder.name}
+          onSubmit={handleRename}
+        />
+      )}
+      {panel?.kind === "delete-folder" && (
+        <DeleteFolderDialog
+          key={panelSession}
+          folder={props.folder}
+          open={panelOpen}
+          onOpenChange={setPanelOpen}
+          onDeleted={props.onDeleted}
+        />
+      )}
       {panel?.kind === "add" && (
         <AddVariablesSheet
           key={panelSession}
