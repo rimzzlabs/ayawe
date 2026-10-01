@@ -16,15 +16,13 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { type Me, saveKeyring } from "@/lib/api"
-import { openVault, type Screen } from "@/lib/screen"
 import { readField, useFormAction } from "@/lib/use-form-action"
 
 interface RecoverScreenProps {
   me: Me
   keyring: Keyring
-  onRecovered: (screen: Screen) => void
+  onRecovered: (params: { keyring: Keyring; dataKey: CryptoKey }) => void
   onBack: () => void
-  onSignOut: () => void
 }
 
 export function RecoverScreen(props: RecoverScreenProps) {
@@ -45,14 +43,12 @@ export function RecoverScreen(props: RecoverScreenProps) {
     const saved = await saveKeyring(keyring)
     if (!saved.ok) return saved.error.message
 
-    const vault = await openVault({ me: props.me, keyring, dataKey: unlocked.value })
-    if (!vault.ok) return vault.error.message
-    props.onRecovered(vault.value)
+    props.onRecovered({ keyring, dataKey: unlocked.value })
     return undefined
   })
 
   return (
-    <AuthLayout me={props.me} onSignOut={props.onSignOut}>
+    <AuthLayout me={props.me}>
       <Card>
         <CardHeader>
           <CardTitle>

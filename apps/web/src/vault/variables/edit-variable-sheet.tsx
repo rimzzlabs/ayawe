@@ -16,7 +16,6 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { ENV_KEY_PATTERN, type Entry } from "@/lib/dotenv"
-import { useUnsavedChanges } from "@/lib/unsaved-changes"
 import { SecretValueTextarea } from "@/vault/secret-value-textarea"
 import { DiscardConfirmation, useDiscardGuard } from "@/vault/variables/discard-guard"
 
@@ -33,7 +32,6 @@ interface EditVariableSheetProps {
 export function EditVariableSheet(props: EditVariableSheetProps) {
   const form = useForm<Entry>({ defaultValues: props.entry })
   const { isDirty, isSubmitting } = form.formState
-  useUnsavedChanges(isDirty)
 
   const guard = useDiscardGuard({
     isDirty,

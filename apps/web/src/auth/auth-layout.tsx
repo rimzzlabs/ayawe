@@ -1,4 +1,5 @@
 import { SignOutIcon } from "@phosphor-icons/react"
+import { useNavigate } from "@tanstack/react-router"
 import type { ReactNode } from "react"
 import { AppHeader } from "@/components/app-header"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
@@ -7,16 +8,17 @@ import type { Me } from "@/lib/api"
 
 interface AuthLayoutProps {
   me: Me
-  onSignOut: () => void
   children: ReactNode
 }
 
 export function AuthLayout(props: AuthLayoutProps) {
+  const navigate = useNavigate()
+
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-2xl flex-col gap-8 p-4 sm:p-8">
       <AppHeader>
         <UserMenu me={props.me}>
-          <DropdownMenuItem onClick={props.onSignOut}>
+          <DropdownMenuItem onClick={() => navigate({ to: "/sign-out" })}>
             <SignOutIcon />
             Sign out
           </DropdownMenuItem>

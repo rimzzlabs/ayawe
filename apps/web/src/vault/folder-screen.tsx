@@ -8,6 +8,7 @@ import {
   PlusIcon,
   TrashIcon,
 } from "@phosphor-icons/react"
+import { Link } from "@tanstack/react-router"
 import { useState } from "react"
 import { PageHeading } from "@/components/page-heading"
 import { Badge } from "@/components/ui/badge"
@@ -34,9 +35,9 @@ import { useIsDesktop } from "@/hooks/use-is-desktop"
 import { type FolderSummary, renameFolder, saveSecrets } from "@/lib/api"
 import { copyText } from "@/lib/clipboard"
 import { type Entry, serializeDotenv } from "@/lib/dotenv"
-import type { Session } from "@/lib/screen"
 import { searchEntries } from "@/lib/search-keys"
 import { sealEntries } from "@/lib/secrets"
+import type { Session } from "@/lib/session"
 import { DeleteFolderDialog } from "@/vault/delete-folder-dialog"
 import { FolderNameDialog } from "@/vault/folder-name-dialog"
 import { AddVariablesSheet } from "@/vault/variables/add-variables-sheet"
@@ -58,9 +59,7 @@ interface FolderScreenProps {
   session: Session
   folder: FolderSummary
   entries: Entry[]
-  onChanged: (folder: FolderSummary) => void
-  onDeleted: (id: string) => void
-  onBack: () => void
+  onDeleted: () => void
 }
 
 function countLabel(count: number) {
@@ -69,6 +68,7 @@ function countLabel(count: number) {
 
 export function FolderScreen(props: FolderScreenProps) {
   const isDesktop = useIsDesktop()
+  const [folder, setFolder] = useState(props.folder)
   const [entries, setEntries] = useState(props.entries)
   const [query, setQuery] = useState("")
   // The panel stays set after it closes, so its content stays visible while it animates out.
@@ -85,21 +85,21 @@ export function FolderScreen(props: FolderScreenProps) {
 
   async function saveEntries(next: Entry[], successTitle: string) {
     const sealed = await sealEntries(props.session.dataKey, next)
-    const saved = await saveSecrets(props.folder.id, sealed)
+    const saved = await saveSecrets(folder.id, sealed)
     if (!saved.ok) {
       toast.add({ title: saved.error.message, type: "error" })
       return false
     }
     setEntries(next)
-    props.onChanged({ ...props.folder, updatedAt: saved.value.updatedAt })
+    setFolder((current) => ({ ...current, updatedAt: saved.value.updatedAt }))
     toast.add({ title: successTitle, type: "success" })
     return true
   }
 
   async function handleRename(name: string) {
-    const renamed = await renameFolder(props.folder.id, name)
+    const renamed = await renameFolder(folder.id, name)
     if (!renamed.ok) return renamed.error.message
-    props.onChanged(renamed.value)
+    setFolder(renamed.value)
     return undefined
   }
 
@@ -114,7 +114,7 @@ export function FolderScreen(props: FolderScreenProps) {
 
   const visibleEntries = searchEntries(entries, query)
   const keys = entries.map((entry) => entry.key)
-  const updatedLabel = dateFormat.format(new Date(props.folder.updatedAt))
+  const updatedLabel = dateFormat.format(new Date(folder.updatedAt))
   const openAdd = () => openPanel({ kind: "add" })
   const openEdit = (entry: Entry) => openPanel({ kind: "edit", entry })
   const openDelete = (entry: Entry) => openPanel({ kind: "delete", entry })
@@ -127,12 +127,13 @@ export function FolderScreen(props: FolderScreenProps) {
             variant="ghost"
             size="icon-sm"
             aria-label="Back to folders"
-            onClick={props.onBack}
+            nativeButton={false}
+            render={<Link to="/vault" />}
           >
             <ArrowLeftIcon />
           </Button>
           <PageHeading className="min-w-0 flex-1 truncate font-heading text-2xl outline-none">
-            {props.folder.name}
+            {folder.name}
           </PageHeading>
           {/* Phones get one menu, so the actions stay close to the title. */}
           <div className="hidden items-center gap-1 sm:flex">
@@ -297,14 +298,14 @@ export function FolderScreen(props: FolderScreenProps) {
           title="Rename folder"
           description="The name is visible to the server. Keep secrets out of it."
           submitLabel="Rename"
-          defaultName={props.folder.name}
+          defaultName={folder.name}
           onSubmit={handleRename}
         />
       )}
       {panel?.kind === "delete-folder" && (
         <DeleteFolderDialog
           key={panelSession}
-          folder={props.folder}
+          folder={folder}
           open={panelOpen}
           onOpenChange={setPanelOpen}
           onDeleted={props.onDeleted}
