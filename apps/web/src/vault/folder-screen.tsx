@@ -35,6 +35,7 @@ import { type FolderSummary, renameFolder, saveSecrets } from "@/lib/api"
 import { copyText } from "@/lib/clipboard"
 import { type Entry, serializeDotenv } from "@/lib/dotenv"
 import type { Session } from "@/lib/screen"
+import { searchEntries } from "@/lib/search-keys"
 import { sealEntries } from "@/lib/secrets"
 import { DeleteFolderDialog } from "@/vault/delete-folder-dialog"
 import { FolderNameDialog } from "@/vault/folder-name-dialog"
@@ -111,9 +112,7 @@ export function FolderScreen(props: FolderScreenProps) {
     )
   }
 
-  const search = query.trim().toLowerCase()
-  const visibleEntries =
-    search === "" ? entries : entries.filter((entry) => entry.key.toLowerCase().includes(search))
+  const visibleEntries = searchEntries(entries, query)
   const keys = entries.map((entry) => entry.key)
   const updatedLabel = dateFormat.format(new Date(props.folder.updatedAt))
   const openAdd = () => openPanel({ kind: "add" })
