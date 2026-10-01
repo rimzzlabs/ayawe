@@ -1,13 +1,13 @@
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+  ResponsiveAlertDialog,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/responsive-dialog"
+import { Button } from "@/components/ui/button"
 
 interface DiscardChangesDialogProps {
   open: boolean
@@ -17,26 +17,28 @@ interface DiscardChangesDialogProps {
 
 export function DiscardChangesDialog(props: DiscardChangesDialogProps) {
   return (
-    <AlertDialog
+    <ResponsiveAlertDialog
       open={props.open}
       onOpenChange={(open) => {
         if (!open) props.onKeepEditing()
       }}
     >
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Discard unsaved changes?</AlertDialogTitle>
-          <AlertDialogDescription>
+      <ResponsiveDialogContent>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Discard unsaved changes?</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
             You have changes that aren't saved yet. If you leave now, they're gone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Keep editing</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={props.onDiscard}>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogFooter>
+          <ResponsiveDialogClose render={<Button variant="outline" />}>
+            Keep editing
+          </ResponsiveDialogClose>
+          <Button variant="destructive" onClick={props.onDiscard}>
             Discard
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </Button>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveAlertDialog>
   )
 }

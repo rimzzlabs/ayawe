@@ -1,15 +1,14 @@
 import { TrashIcon } from "@phosphor-icons/react"
 import { useState, useTransition } from "react"
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+  ResponsiveAlertDialog,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
@@ -67,17 +66,19 @@ export function DeleteFolderDialog(props: DeleteFolderDialogProps) {
   }
 
   return (
-    <AlertDialog open={props.open} onOpenChange={props.onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete {props.folder.name}?</AlertDialogTitle>
-          <AlertDialogDescription>
+    <ResponsiveAlertDialog open={props.open} onOpenChange={props.onOpenChange}>
+      <ResponsiveDialogContent>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Delete {props.folder.name}?</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
             This deletes the folder and all its secrets. You cannot undo this.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogFooter>
+          <ResponsiveDialogClose render={<Button variant="outline" />}>
+            Cancel
+          </ResponsiveDialogClose>
+          <Button
             variant="destructive"
             onClick={handleDelete}
             disabled={pending}
@@ -85,9 +86,9 @@ export function DeleteFolderDialog(props: DeleteFolderDialogProps) {
           >
             {pending && <Spinner data-icon="inline-start" />}
             Delete
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </Button>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveAlertDialog>
   )
 }
