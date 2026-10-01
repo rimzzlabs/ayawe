@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0](https://github.com/rimzzlabs/ayawe/compare/v0.2.0...v0.3.0) (2026-10-01)
+
+
+### Features
+
+* **web:** add fuzzy search for variable keys ([#12](https://github.com/rimzzlabs/ayawe/issues/12)) ([4887a58](https://github.com/rimzzlabs/ayawe/commit/4887a58c8bc6815c7d5fcdb31021e3f77a625e3f))
+* **web:** add SEO, a prerendered landing page, and a self-host guide ([#15](https://github.com/rimzzlabs/ayawe/issues/15)) ([c8c53eb](https://github.com/rimzzlabs/ayawe/commit/c8c53eb5b5adbfaa3029df0bfab751f79c6eedba))
+* **web:** move to TanStack Router with a landing page and route guards ([#14](https://github.com/rimzzlabs/ayawe/issues/14)) ([1164955](https://github.com/rimzzlabs/ayawe/commit/1164955673b0daf5e74b32278c12f368527efc9a))
+
 ## [0.2.0](https://github.com/rimzzlabs/ayawe/compare/v0.1.0...v0.2.0) (2026-10-01)
 
 
