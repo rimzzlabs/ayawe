@@ -26,11 +26,27 @@ export function VariableValue(props: VariableValueProps) {
     setTimeout(() => setCopied(false), 1500)
   }
 
+  const [firstLine = "", ...otherLines] = props.entry.value.split(/\r?\n/)
+
   return (
     <div className={cn("flex min-w-0 items-center gap-1", props.className)}>
-      <span className="min-w-0 flex-1 truncate font-mono text-sm">
+      <span className="flex min-w-0 flex-1 items-baseline gap-2 font-mono text-sm">
         {revealed ? (
-          props.entry.value || <span className="text-muted-foreground italic">empty</span>
+          <>
+            {/* Only the first line shows, so a long PEM key does not stretch the row. */}
+            <span className="min-w-0 truncate">
+              {props.entry.value ? (
+                firstLine
+              ) : (
+                <span className="text-muted-foreground italic">empty</span>
+              )}
+            </span>
+            {otherLines.length > 0 && (
+              <span className="shrink-0 font-sans text-muted-foreground text-xs">
+                +{otherLines.length} {otherLines.length === 1 ? "line" : "lines"}
+              </span>
+            )}
+          </>
         ) : (
           <>
             {/* A fixed length, so the dots do not tell how long the value is. */}
