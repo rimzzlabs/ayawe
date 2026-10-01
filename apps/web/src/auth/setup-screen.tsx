@@ -61,15 +61,6 @@ export function SetupScreen(props: SetupScreenProps) {
         </CardHeader>
         <CardContent>
           <form id="setup-form" onSubmit={form.onSubmit}>
-            {/* Lets password managers save the vault password under the GitHub login. */}
-            <input
-              type="text"
-              name="username"
-              autoComplete="username"
-              value={props.me.login}
-              readOnly
-              hidden
-            />
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="password">Vault password</FieldLabel>
@@ -77,7 +68,7 @@ export function SetupScreen(props: SetupScreenProps) {
                   id="password"
                   aria-describedby="setup-password-hint"
                   name="password"
-                  autoComplete="new-password"
+                  autoComplete="off"
                   autoFocus
                 />
                 <FieldDescription id="setup-password-hint">
@@ -89,7 +80,7 @@ export function SetupScreen(props: SetupScreenProps) {
                 <PasswordInput
                   id="confirm"
                   name="confirm"
-                  autoComplete="new-password"
+                  autoComplete="off"
                   aria-invalid={form.error ? true : undefined}
                   aria-describedby={form.error ? "setup-error" : undefined}
                 />

@@ -64,15 +64,6 @@ export function RecoverScreen(props: RecoverScreenProps) {
         </CardHeader>
         <CardContent>
           <form id="recover-form" onSubmit={form.onSubmit}>
-            {/* Lets password managers save the vault password under the GitHub login. */}
-            <input
-              type="text"
-              name="username"
-              autoComplete="username"
-              value={props.me.login}
-              readOnly
-              hidden
-            />
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="code">Recovery code</FieldLabel>
@@ -90,7 +81,7 @@ export function RecoverScreen(props: RecoverScreenProps) {
                 <PasswordInput
                   id="password"
                   name="password"
-                  autoComplete="new-password"
+                  autoComplete="off"
                   aria-invalid={form.error ? true : undefined}
                   aria-describedby={form.error ? "recover-error" : undefined}
                 />

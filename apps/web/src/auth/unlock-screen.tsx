@@ -49,22 +49,13 @@ export function UnlockScreen(props: UnlockScreenProps) {
         </CardHeader>
         <CardContent>
           <form id="unlock-form" onSubmit={form.onSubmit}>
-            {/* Lets password managers save the vault password under the GitHub login. */}
-            <input
-              type="text"
-              name="username"
-              autoComplete="username"
-              value={props.me.login}
-              readOnly
-              hidden
-            />
             <FieldGroup>
               <Field data-invalid={form.error ? true : undefined}>
                 <FieldLabel htmlFor="password">Vault password</FieldLabel>
                 <PasswordInput
                   id="password"
                   name="password"
-                  autoComplete="current-password"
+                  autoComplete="off"
                   autoFocus
                   aria-invalid={form.error ? true : undefined}
                   aria-describedby={form.error ? "unlock-error" : undefined}

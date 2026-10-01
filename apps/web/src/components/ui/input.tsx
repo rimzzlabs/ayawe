@@ -5,6 +5,7 @@ import { cn } from "cn"
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <InputPrimitive
+      autoComplete="off"
       type={type}
       data-slot="input"
       className={cn(
