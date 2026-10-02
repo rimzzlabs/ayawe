@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/rimzzlabs/ayawe/compare/v0.3.0...v0.4.0) (2026-10-02)
+
+
+### Features
+
+* **web:** add favicons for search, a web manifest, and og:locale ([#16](https://github.com/rimzzlabs/ayawe/issues/16)) ([615bab3](https://github.com/rimzzlabs/ayawe/commit/615bab32d2610cb15b28d3c4ebf3ebe5de5514e2))
+
 ## [0.3.0](https://github.com/rimzzlabs/ayawe/compare/v0.2.0...v0.3.0) (2026-10-01)
 
 
